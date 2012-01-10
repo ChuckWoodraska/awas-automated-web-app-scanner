@@ -1,0 +1,20 @@
+#summary Current Status of AWAS
+
+= Introduction =
+
+This page will contain the current status of the AWAS project including issues, last updates, and what is being worked on currently.
+
+
+= Details =
+
+Last Updates:
+
+- Replay functionality
+
+Next Updates should include:
+
+-Replay functionality to note differences
+
+-Test Oracle
+
+-Serialization

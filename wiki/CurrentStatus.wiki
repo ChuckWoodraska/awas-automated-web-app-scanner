@@ -9,12 +9,12 @@ This page will contain the current status of the AWAS project including issues, 
 
 Last Updates:
 
-- Replay functionality
+- Test Oracle
 
 Next Updates should include:
 
 -Replay functionality to note differences
 
--Test Oracle
-
 -Serialization
+
+-Find elements both through id and name attributes

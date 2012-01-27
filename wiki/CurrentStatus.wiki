@@ -4,6 +4,8 @@
 
 This page will contain the current status of the AWAS project including issues, last updates, and what is being worked on currently.
 
+Reminder: This project requires the Java Selenium WebDriver package.
+
 
 = Details =
 

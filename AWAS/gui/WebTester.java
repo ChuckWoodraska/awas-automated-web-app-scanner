@@ -209,8 +209,7 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
         } 
         else if (MenuCommands.NEW_COMMAND.equals(cmd)) { 
         	testPanel.removeAllTestTrees();        	        
-        	//testPanel.navigate(null, "http://www.google.com/", false);
-        	testPanel.navigate(null, "http://www.sterlingemarketing.com/Gundersons/Loose-Diamond-Search", false);
+        	testPanel.navigate(null, "http://www.google.com/", false);
         	//testPanel.navigate(null, "http://localhost:52989/SelTest/Default.aspx", false);
         	//testPanel.navigate(null, "http://localhost:55387/FileUploadTest/Default.aspx", false);
         

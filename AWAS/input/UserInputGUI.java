@@ -36,6 +36,9 @@ public class UserInputGUI extends JPanel {
     	{
     		s.add(node.columnNames[i]);
     	}
+    	
+    	
+    	
 //    	for(int i = 0; i < node.userInputCombos.getDataInputs().size(); ++i)
 //    	{
 //    		for(int j = 0; j < node.userInputCombos.getDataInputs().get(i).getSize(); ++j)
@@ -47,6 +50,10 @@ public class UserInputGUI extends JPanel {
         //Create and set up the content pane.
         JComponent newContentPane = new ComboListTable(s, node);
         newContentPane.setOpaque(true); //content panes must be opaque
+        
+        //Create and set up the content pane.
+        JComponent testOraclePanel = new TestOracleTable(node);
+        newContentPane.setOpaque(true); //content panes must be opaque
 
 		JFrame frame = new JFrame("Table");
 		   frame.addWindowListener( new WindowAdapter() {
@@ -55,14 +62,19 @@ public class UserInputGUI extends JPanel {
 			      }
 			    });
 	   
+		   
+		   
+		   
 	   JScrollPane scrollpane = new JScrollPane(tablePanel);
 	   JScrollPane scrollpane2 = new JScrollPane(tablePanel2);
 	   JScrollPane scrollpane3 = new JScrollPane(newContentPane);
+	   JScrollPane scrollpane4 = new JScrollPane(testOraclePanel);
 	   // JComponent panel2 = makeTextPanel("INVALID");
 	   JTabbedPane tabbedPane = new JTabbedPane();
 	   tabbedPane.addTab("Valid", scrollpane);
 	   tabbedPane.addTab("Invalid", scrollpane2);
 	   tabbedPane.addTab("Combinations", scrollpane3);
+	   tabbedPane.addTab("Test Oracle", scrollpane4);
 	   
 	   //scrollpane.setPreferredSize(MainFrame.EditPanelSize);
 	   frame.getContentPane().add(tabbedPane);

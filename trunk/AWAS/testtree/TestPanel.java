@@ -528,7 +528,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 			System.out.println("Start Recorded Inputs");
 			TestNode parentNode = (TestNode) currentNode.getParent();
 			parentNode.convertVectorsToInput(parentNode);
-			AutoFormNavigator afi = new AutoFormNavigator(parentNode.getCombinationalInput(),parentNode.getUserInput(),parentNode.getUserInputInvalid());
+			AutoFormNavigator afi = new AutoFormNavigator(parentNode.getCombinationalInput(),parentNode.getUserInput(),parentNode.getUserInputInvalid(), parentNode.getTestOracle());
 			
 //			TestNode temp = (TestNode) currentNode.getChildAt(0);
 //			ArrayList<int[]> formCombinationArrayList = new ArrayList<int[]>();
@@ -589,7 +589,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     		if(currentNode.isForm())
     		{
     			currentNode.convertVectorsToInput(currentNode);
-    			AutoFormNavigator afi = new AutoFormNavigator(currentNode.getCombinationalInput(),currentNode.getUserInput(),currentNode.getUserInputInvalid());
+    			AutoFormNavigator afi = new AutoFormNavigator(currentNode.getCombinationalInput(),currentNode.getUserInput(),currentNode.getUserInputInvalid(), currentNode.getTestOracle());
     			afi.navigatePage(currentNode.getURL());
     			int index = 1;
     		    for (TestNode node : afi.testNodes){

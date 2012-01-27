@@ -8,6 +8,7 @@ import input.CombinationalInputs;
 import input.ComboInput;
 import input.FormGroup;
 import input.FormRecord;
+import input.TestOracle;
 import input.UserInput;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -25,6 +26,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	public ArrayList<FormRecord> recordedInputs = new ArrayList<FormRecord>();
 	
 	public CombinationalInputs userInputCombos = new CombinationalInputs(new ArrayList<ComboInput>());
+	private TestOracle testOracleData = new TestOracle();
 	private ArrayList<UserInput> userInput;
 	private ArrayList<UserInput> userInputInvalid;
 	
@@ -155,6 +157,16 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		  this.userInputInvalid = inputData;
 	  }
 	  
+	  public TestOracle getTestOracle()
+	  {
+		  return testOracleData;
+	  }
+	  
+	  public  void setTestOracle(TestOracle testOracleData)
+	  {
+		  this.testOracleData = testOracleData;
+	  }
+	  
 	  public  void setId(int id)
 	  {
 		  this.id = id+"";
@@ -230,6 +242,8 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      	userInputCombos.getDataInputs().clear();
 	      	ComboInput comboInput = new ComboInput(inputCombos);
 	      	userInputCombos.getDataInputs().add(comboInput);
+	      	
+	      	
 	  }
 	  
 	  public void convertVectorsToInput(TestNode node)

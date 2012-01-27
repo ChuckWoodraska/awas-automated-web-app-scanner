@@ -54,11 +54,12 @@ public class AutoFormNavigator  {
 	public static final String KEYWORD_INPUT 	= "input";
 	public static final String KEYWORD_SELECT 	= "select";
 	
-	public AutoFormNavigator(CombinationalInputs userInputCombos, ArrayList<UserInput> userInput, ArrayList<UserInput> invalidInput)
+	public AutoFormNavigator(CombinationalInputs userInputCombos, ArrayList<UserInput> userInput, ArrayList<UserInput> invalidInput, TestOracle testOracle)
 	{
 		this.userInputCombos = userInputCombos;
 		this.userInput = userInput;
 		this.invalidInput = invalidInput;
+		this.testOracle = testOracle;
 	}
 	
 	
@@ -101,6 +102,7 @@ public class AutoFormNavigator  {
 	public ArrayList<TestNode> testNodes = new ArrayList<TestNode>();
 	//public ArrayList<FormGroup> formGroups = new ArrayList<FormGroup>();
 	public FormGroup formGroup;
+	public TestOracle testOracle;
 	
 
 	// BROWSER SETUP
@@ -1210,7 +1212,7 @@ public class AutoFormNavigator  {
 //    			System.out.println("3");
 //    		}
 //    	}
-    	
+    	testOracle();
     	formGroup = new FormGroup(formIndex, formID, new ArrayList<FormRecord>());
     	formGroup.addFormInput(formrecord);
     	
@@ -1223,15 +1225,26 @@ public class AutoFormNavigator  {
     
     private void testOracle()
     {
-//    	String testType = "partial text";
-//    	switch (testType){
-//		case PARTIALTEXT: 
-//
-//    					break;
-//		case PAGETITLE: 
-//
-//			break;
-//    	}
+    	
+    	int testType = testOracle.getTestTypeData().get(0);
+    	//TestType.TestTypeEnum formInputType = TestType.getTestType(testType);
+    	switch (testType){
+		case 0: 
+			String title = driver.getTitle();
+			if(title.equals(testOracle.getTestData().get(0)))
+			{
+				System.out.println(title+ " equals "+ testOracle.getTestData().get(0)+" TEST: PASSED");
+			}
+			else
+			{
+				System.out.println(title+ " does not equal "+ testOracle.getTestData().get(0)+" TEST: FAILED");
+			}
+			
+    					break;
+		case 1: 
+			driver.findElement(By.partialLinkText((testOracle.getTestData().get(0))));
+			break;
+    	}
     }
     
     public void signout(WebDriver driver){

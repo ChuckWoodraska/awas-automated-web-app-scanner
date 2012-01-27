@@ -25,6 +25,7 @@ public class UserInputReader {
 	private CombinationalInputs userInputCombos = new CombinationalInputs(new ArrayList<ComboInput>());
 	private ArrayList<UserInput> userInput = new ArrayList<UserInput>();
 	private ArrayList<UserInput> userInputInvalid = new ArrayList<UserInput>();
+	private TestOracle testOracle = new TestOracle();
 	private int currentRow = 0;
 	
 	private String path;
@@ -40,7 +41,7 @@ public class UserInputReader {
 		WebDriver driver = new MyFirefoxDriver(); 
 		driver.get(url);
 		WebElement form = driver.findElement(By.id(formName));
-		AutoFormNavigator afi = new AutoFormNavigator(userInputCombos, userInput, userInputInvalid);
+		AutoFormNavigator afi = new AutoFormNavigator(userInputCombos, userInput, userInputInvalid, testOracle);
 		List<Object> inputs = afi.collectAllFormInputElements(form);
 		for(int index=0; index<afi.pointerToFirstButton; index++){
 			Object formInputElement = inputs.get(index);

@@ -36,14 +36,7 @@ public class TestOracleTable extends JPanel implements ActionListener {
         //Indices start at 0, so 4 specifies the pig.
         testOracleTypeList = new JComboBox(testTypeStrings);
         try{
-	        if(node.getTestOracle().getTestTypeData().get(0).intValue() == 0)
-	        {
-	        	testOracleTypeList.setSelectedIndex(0);
-	        }
-	        else
-	        {
-	        	testOracleTypeList.setSelectedIndex(1);
-	        }
+
     	} catch (Exception e) {
     		testOracleTypeList.setSelectedIndex(0);
     	}    
@@ -52,7 +45,7 @@ public class TestOracleTable extends JPanel implements ActionListener {
         
         dataField = new JTextField(dataString);
         try{
-        	dataField.setText(node.getTestOracle().getTestData().get(0));
+        	//dataField.setText(node.getTestOracle().getTestData().get(0));
         } catch (Exception e) {
     		dataField.setText("");
     	}   
@@ -92,8 +85,8 @@ public class TestOracleTable extends JPanel implements ActionListener {
         public void actionPerformed(ActionEvent e) {
         	TestOracle testOracle = node.getTestOracle();
         	System.out.println(dataField.getText());
-        	testOracle.setTestData(dataField.getText());
-        	testOracle.setTestTypeData(testOracleTypeList.getSelectedIndex());
+        	//testOracle.setTestData(dataField.getText());
+        	//testOracle.setTestTypeData(testOracleTypeList.getSelectedIndex());
 
         }
 

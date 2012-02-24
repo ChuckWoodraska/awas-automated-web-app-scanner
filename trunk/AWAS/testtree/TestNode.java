@@ -32,7 +32,9 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	
 	private Vector<Vector<Object>> validData = new Vector<Vector<Object>>();
 	private Vector<Vector<Object>> invalidData = new Vector<Vector<Object>>();
+	private Vector<Vector<Object>>  testOracleTable = new Vector<Vector<Object>>();
 	public String[] columnNames;
+	public String[] columnNamesTestOracleTable = {"#","Command", "Target", "Value"};
 	public ArrayList<String> inputCombos = new ArrayList<String>();
 	
 	public TestNode(String title){
@@ -182,6 +184,11 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		  return invalidData;
 	  }
 	  
+	  public Vector<Vector<Object>> getTestOracleTable()
+	  {
+		  return testOracleTable;
+	  }
+	  
 	  public void convertInputToVectors()
 	  {
 		  columnNames = new String[userInput.size()+1];
@@ -239,6 +246,41 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      		invalidTemp.insertElementAt(row+1, 0);
 	      		invalidData.add(invalidTemp);
 	        }
+	      	
+	      	max = 10*(testOracleData.getTestTypeData().size()/10)+10;
+	      	for(int row = 0; row < max; ++row)
+	      	{
+	      		Vector<Object> temp = new Vector<Object>();
+	      			
+	      		for(int col = 0; col < 3; ++col)
+	      		{			
+      					try{
+      						testOracleData.getTestTypeData().get(col);
+      						if(col == 0)
+      						{
+      							temp.add(testOracleData.getTestTypeData().get(col));
+      						}
+      						else
+      						{
+      							for(int index = 0; index < testOracleData.getTestData().get(col).length; ++index)
+          						{
+          							temp.add(testOracleData.getTestData().get(col)[index]);
+          						}
+      						}
+      						
+      						//System.out.println(userInput.get(col).getUserInputData().get(row));
+      					}
+      					catch(IndexOutOfBoundsException e){
+      						temp.add("");
+      					}	      						      			
+	      			      				
+	      		}
+	      		temp.insertElementAt(row+1, 0);
+	      		//System.out.println(temp);
+	      		testOracleTable.add(temp);
+	      		
+	      	}
+	      	
 	      	userInputCombos.getDataInputs().clear();
 	      	ComboInput comboInput = new ComboInput(inputCombos);
 	      	userInputCombos.getDataInputs().add(comboInput);
@@ -246,7 +288,8 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      	
 	  }
 	  
-	  public void convertVectorsToInput(TestNode node)
+	  @SuppressWarnings("null")
+	public void convertVectorsToInput(TestNode node)
 	  {
 
 		  for(UserInput input : node.getUserInput())
@@ -254,10 +297,13 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 				  input.getUserInputData().clear();		
 		  }
 		  
-		  for(UserInput invalidInput : userInputInvalid)
+		  for(UserInput invalidInput : node.getUserInputInvalid())
 		  {
 				  invalidInput.getUserInputData().clear();			 
 		  }
+		  
+		  testOracleData.getTestData().clear();
+		  testOracleData.getTestTypeData().clear();
 		  
 				//System.out.println(userInput.get(0).getInputID());
 		 
@@ -268,7 +314,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 				  {
 					  if(!temp.get(i).equals(""))
 					  {
-						  userInput.get(i-1).userInputData.add(temp.get(i).toString());
+						  userInput.get(i-1).addUserInputData(temp.get(i).toString());
 						  //System.out.println(temp.get(i).toString());				
 					  }
 					  
@@ -288,10 +334,32 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 					  }
 						  
 				  }			 
-		  }
-
+		  }		
 		  
-	  }
-	  
+		  for(Vector<Object> temp : node.getTestOracleTable())
+		  {			  
+			  		String[] tempStr = {"",""};
+				  for(int i = 1; i < 4; ++i)
+				  {
+					 
+				
+					  if(!temp.get(i).equals("") && i==1)
+					  {
+						  testOracleData.addTestOracleTypeData(temp.get(i).toString());
+						  //System.out.println(temp.get(i).toString());
+					  }
+					  else if(!temp.get(i).equals("") && i==2)
+					  {
+						  tempStr[0] = temp.get(i).toString();						  
+					  }
+					  else if(!temp.get(1).equals(""))
+					  {
+						  tempStr[1] = temp.get(i).toString();
+						  testOracleData.addTestOracleData(tempStr);						  
+					  }
+						  
+				  }			 
+		  }	
+	  }	  
  
 }

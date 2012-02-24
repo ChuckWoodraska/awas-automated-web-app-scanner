@@ -9,30 +9,39 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class TestOracle implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<Integer> testTypeData = new ArrayList<Integer>();
-	private ArrayList<String> testData = new ArrayList<String>();
+	private ArrayList<String> testTypeData = new ArrayList<String>();
+	private ArrayList<String[]> testData = new ArrayList<String[]>();
 	
 	public TestOracle(){
 
 	}
 	
-	public ArrayList<Integer> getTestTypeData()
+	public ArrayList<String> getTestTypeData()
 	{
 		return testTypeData;
 	}
 	
-	public ArrayList<String> getTestData()
+	public ArrayList<String[]> getTestData()
 	{
 		return testData;
 	}
 	
-	public void setTestData(String data)
+	public void setTestData(String[] data)
 	{
 		testData.add(data);
 	}
 	
-	public void setTestTypeData(Integer data)
+	public void setTestTypeData(String data)
 	{
 		testTypeData.add(data);
 	}
+	
+	public void addTestOracleData(String[] input){
+		testData.add(input);
+	}
+	
+	public void addTestOracleTypeData(String input){
+		testTypeData.add(input);
+	}
+	
 }

@@ -33,6 +33,7 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverCommandProcessor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -82,7 +83,6 @@ public class AutoFormNavigator  {
 	//static String URL = "http://webgoat:webgoat@localhost/WebGoat/attack";
 	static String URL = "http://google.com"; //WONT WORK AJAX 
 	//static String URL = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1305216662&rver=6.0.5276.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%253a80%252frewards%252fsignup%252fSignIn%253flandingAction%253dWeb&lc=1033&id=264960&ru=http%3a%2f%2fwww.bing.com%2fPassport.aspx%3frequrl%3dhttp%253a%252f%252fwww.bing.com%253a80%252frewards%252fsignup%252fSignIn%253flandingAction%253dWeb";
-	//static String URL = "http://thechive.com";
 	
 	// TEST INPUT COMBINATIONS
 	//CombinationalInput userInputCombos = new CombinationalInput(0, new ArrayList<InputRecord>());
@@ -208,7 +208,6 @@ public class AutoFormNavigator  {
 	
 	public List<Object> collectAllFormInputElements(WebElement form){
 
-		//checkForCombinations(); // probly defunct
 		ArrayList<WebElement> formRadioButtons = new ArrayList<WebElement>();
 		ArrayList<SelectmultipleGroup> formSelectmultipleInputs = new ArrayList<SelectmultipleGroup>();
         List<WebElement> allFormInputs = form.findElements(By.tagName(KEYWORD_INPUT));
@@ -230,17 +229,17 @@ public class AutoFormNavigator  {
         	}
         	try{
     		
-        	for(String temp: userInputCombos.getDataInputs().get(0).getInputName())
-        	{
-        		if(input.getAttribute(KEYWORD_NAME).contentEquals(temp))
-        		{        		
-        			allFormInputs.remove(i);
-        			comboInputsCount = 1;
-        		}
-        	}
+	        	for(String temp: userInputCombos.getDataInputs().get(0).getInputName())
+	        	{
+	        		if(input.getAttribute(KEYWORD_NAME).contentEquals(temp))
+	        		{        		
+	        			allFormInputs.remove(i);
+	        			comboInputsCount = 1;
+	        		}
+	        	}
         	}
     		catch(IndexOutOfBoundsException e){
-    			
+    			// Nothing in userInputCombos so it errors
     		}
 
         }
@@ -1099,7 +1098,7 @@ public class AutoFormNavigator  {
 										assert invalidInput.get(i).getSize()>choiceIndex;
 										if(!invalidInput.get(i).getUserInputString(choiceIndex).contentEquals("DEFAULT"))
 										{
-											System.out.println("choice Index "+ choiceIndex);
+											//System.out.println("choice Index "+ choiceIndex);
 											((WebElement) formInputElement).clear();
 				        					((WebElement) formInputElement).sendKeys(invalidInput.get(i).getUserInputString(choiceIndex));
 										}
@@ -1132,7 +1131,7 @@ public class AutoFormNavigator  {
 										assert invalidInput.get(i).getSize()>choiceIndex;
 										if(!invalidInput.get(i).getUserInputString(choiceIndex).contentEquals("DEFAULT"))
 										{
-											System.out.println("choice Index "+ choiceIndex);
+											//System.out.println("choice Index "+ choiceIndex);
 											((WebElement) formInputElement).clear();
 				        					((WebElement) formInputElement).sendKeys(invalidInput.get(i).getUserInputString(choiceIndex));
 										}
@@ -1187,7 +1186,7 @@ public class AutoFormNavigator  {
 		    try {
 				currentDriver.wait(WAIT_TIME);
 			} catch (InterruptedException e) {
-				System.out.println("1");
+				System.out.println("Error at synchronizing in elementClick");
 			}
 		}
 
@@ -1200,7 +1199,7 @@ public class AutoFormNavigator  {
     		element.click();    		
     	}
     	catch ( StaleElementReferenceException e){
-    		System.out.println("2");
+    		System.out.println("Error at Submit in elementClick");
     	}
 //    	Alert alert = currentDriver.switchTo().alert();
 //    	if (alert!=null){
@@ -1212,7 +1211,10 @@ public class AutoFormNavigator  {
 //    			System.out.println("3");
 //    		}
 //    	}
-    	testOracle();
+
+    	currentDriver = testOracle(currentDriver);
+
+    	//System.out.println("Below testOracle");
     	formGroup = new FormGroup(formIndex, formID, new ArrayList<FormRecord>());
     	formGroup.addFormInput(formrecord);
     	
@@ -1223,28 +1225,20 @@ public class AutoFormNavigator  {
     	signout(currentDriver);
   	 }
     
-    private void testOracle()
+    private WebDriver testOracle(WebDriver currentDriver)
     {
-    	
-    	int testType = testOracle.getTestTypeData().get(0);
-    	//TestType.TestTypeEnum formInputType = TestType.getTestType(testType);
-    	switch (testType){
-		case 0: 
-			String title = driver.getTitle();
-			if(title.equals(testOracle.getTestData().get(0)))
-			{
-				System.out.println(title+ " equals "+ testOracle.getTestData().get(0)+" TEST: PASSED");
-			}
-			else
-			{
-				System.out.println(title+ " does not equal "+ testOracle.getTestData().get(0)+" TEST: FAILED");
-			}
-			
-    					break;
-		case 1: 
-			driver.findElement(By.partialLinkText((testOracle.getTestData().get(0))));
-			break;
+    	String result = "";
+    	WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("", currentDriver);
+    	int index = 0; 
+
+    	while(index < testOracle.getTestTypeData().size())
+    	{
+    		result = webDriverCommandProcessor.doCommand(testOracle.getTestTypeData().get(index), testOracle.getTestData().get(index));
+    		System.out.println(result);
+    		++index;
     	}
+    	
+    	return currentDriver;
     }
     
     public void signout(WebDriver driver){

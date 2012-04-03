@@ -14,23 +14,18 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
 
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-
-import testtree.TestNode;
 
 
 
@@ -87,7 +82,7 @@ public class GeneralTablePanel extends JPanel implements ActionListener, ListSel
 		// align headers of all columns
 		TableCellRenderer rendererFromHeader = table.getTableHeader().getDefaultRenderer();
 		JLabel headerLabel = (JLabel)rendererFromHeader;
-		headerLabel.setHorizontalAlignment(JLabel.CENTER); 
+		headerLabel.setHorizontalAlignment(SwingConstants.CENTER); 
 
 		// align the header of first column
 /*		DefaultTableCellHeaderRenderer headerRenderer = new DefaultTableCellHeaderRenderer();
@@ -124,7 +119,7 @@ public class GeneralTablePanel extends JPanel implements ActionListener, ListSel
 
 		// align first column center  
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		table.getColumnModel().getColumn(0).setCellRenderer( centerRenderer );
 	    setLayout(new BorderLayout());
 		add(new JScrollPane(table), BorderLayout.CENTER);
@@ -178,6 +173,7 @@ public class GeneralTablePanel extends JPanel implements ActionListener, ListSel
 		tableModel.setMinimumRows(rows);
 	}
 	
+	@Override
 	public void setFont(Font font){
 		super.setFont(font);
 		if (table!=null)
@@ -206,6 +202,7 @@ public class GeneralTablePanel extends JPanel implements ActionListener, ListSel
 		table.getColumnModel().getColumn(0).setPreferredWidth(10);
 	}
 
+	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()) {
 			int selectedRow = table.getSelectedRow();			
@@ -235,9 +232,11 @@ public class GeneralTablePanel extends JPanel implements ActionListener, ListSel
 		final JPopupMenu popupMenu = new JPopupMenu();
 
 		table.addMouseListener( new MouseAdapter() { 
+			@Override
 			public void mousePressed( MouseEvent e ) { 
 				checkForTriggerEvent(e); 
 			} 
+			@Override
 			public void mouseReleased( MouseEvent e ) { 
 				checkForTriggerEvent(e); 
 			}
@@ -267,6 +266,7 @@ public class GeneralTablePanel extends JPanel implements ActionListener, ListSel
 	}
 	
     // implements ActionListener
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
 		if (cmd == insertRowBefore) {

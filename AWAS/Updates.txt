@@ -1,0 +1,9 @@
+WebTest 0.16
+
+Updates:
+- Replay functionality
+
+Next Updates should include:
+-Replay functionality to note differences
+-Test Oracle
+-Serialization

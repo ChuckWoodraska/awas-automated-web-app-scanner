@@ -1,14 +1,8 @@
 package input;
 
-import input.ComboListTable.AddListener;
-
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-
 import testtree.TestNode;
 
 /*
@@ -66,7 +60,8 @@ public class TestOracleTable extends JPanel implements ActionListener {
     
 
     /** Listens to the combo box. */
-    public void actionPerformed(ActionEvent e) {
+    @Override
+	public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
         cb.getSelectedIndex();
         
@@ -82,9 +77,10 @@ public class TestOracleTable extends JPanel implements ActionListener {
         }
  
         //Required by ActionListener.
-        public void actionPerformed(ActionEvent e) {
-        	TestOracle testOracle = node.getTestOracle();
-        	System.out.println(dataField.getText());
+        @Override
+		public void actionPerformed(ActionEvent e) {
+        	//TestOracle testOracle = node.getTestOracle();
+        	//System.out.println(dataField.getText());
         	//testOracle.setTestData(dataField.getText());
         	//testOracle.setTestTypeData(testOracleTypeList.getSelectedIndex());
 
@@ -116,7 +112,8 @@ public class TestOracleTable extends JPanel implements ActionListener {
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
                 createAndShowGUI();
             }
         });

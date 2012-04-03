@@ -20,22 +20,27 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	
 	private String url;
 	private String id;	
+	private String formName;
 	private FormGroup formRecords;
 	public Boolean noTable = true;
 	public Boolean isForm = false;
 	public ArrayList<FormRecord> recordedInputs = new ArrayList<FormRecord>();
 	
 	public CombinationalInputs userInputCombos = new CombinationalInputs(new ArrayList<ComboInput>());
-	private TestOracle testOracleData = new TestOracle();
+	private TestOracle validTestOracleData = new TestOracle();
+	private TestOracle invalidTestOracleData = new TestOracle();
 	private ArrayList<UserInput> userInput;
 	private ArrayList<UserInput> userInputInvalid;
 	
 	private Vector<Vector<Object>> validData = new Vector<Vector<Object>>();
 	private Vector<Vector<Object>> invalidData = new Vector<Vector<Object>>();
-	private Vector<Vector<Object>>  testOracleTable = new Vector<Vector<Object>>();
+	private Vector<Vector<Object>>  validTestOracleTable = new Vector<Vector<Object>>();
+	private Vector<Vector<Object>>  invalidTestOracleTable = new Vector<Vector<Object>>();
 	public String[] columnNames;
 	public String[] columnNamesTestOracleTable = {"#","Command", "Target", "Value"};
 	public ArrayList<String> inputCombos = new ArrayList<String>();
+	
+	private int numberOfSuccessors = 0;
 	
 	public TestNode(String title){
 		super(title);
@@ -59,7 +64,24 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		this.isForm = isForm;
 	}
 	
+	public TestNode(String title, String url, String id, String formName, Boolean isForm){
+		this(title);
+		this.url = url;
+		this.id = id;
+		this.formName = formName;
+		this.isForm = isForm;
+	}
+	
 	public TestNode(String title, String url, String id, ArrayList<FormRecord> inputs, Boolean isForm){
+		this(title);
+		this.url = url;
+		this.id = id;
+		this.isForm = isForm;
+		this.recordedInputs = inputs;
+		
+	}
+	
+	public TestNode(String title, String url, String id, String formName, ArrayList<FormRecord> inputs, Boolean isForm){
 		this(title);
 		this.url = url;
 		this.id = id;
@@ -74,6 +96,14 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	
 	public String getID(){
 		return id;
+	}
+	
+	public String getFormName(){
+		return formName;
+	}
+	
+	public void setFormName(String name){
+		formName = name;
 	}
 	
 	public String getTitle(){
@@ -108,6 +138,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		return super.toString() +" "+url+" "+inputs;
 	}
 	
+	@Override
 	public String toString(){
 		String titleStr = displayTitle? " "+super.toString():"";
 		String inputs = "";
@@ -159,14 +190,24 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		  this.userInputInvalid = inputData;
 	  }
 	  
-	  public TestOracle getTestOracle()
+	  public TestOracle getValidTestOracle()
 	  {
-		  return testOracleData;
+		  return validTestOracleData;
 	  }
 	  
-	  public  void setTestOracle(TestOracle testOracleData)
+	  public  void setValidTestOracle(TestOracle validTestOracleData)
 	  {
-		  this.testOracleData = testOracleData;
+		  this.validTestOracleData = validTestOracleData;
+	  }
+	  
+	  public TestOracle getInvalidTestOracle()
+	  {
+		  return invalidTestOracleData;
+	  }
+	  
+	  public  void setInvalidTestOracle(TestOracle invalidTestOracleData)
+	  {
+		  this.invalidTestOracleData = invalidTestOracleData;
 	  }
 	  
 	  public  void setId(int id)
@@ -184,10 +225,25 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		  return invalidData;
 	  }
 	  
-	  public Vector<Vector<Object>> getTestOracleTable()
+	  public Vector<Vector<Object>> getValidTestOracleTable()
 	  {
-		  return testOracleTable;
+		  return validTestOracleTable;
 	  }
+	  
+	  public Vector<Vector<Object>> getInvalidTestOracleTable()
+	  {
+		  return invalidTestOracleTable;
+	  }
+
+	  public void setNumberrOfSuccessors(int numberOfChildren) {
+		  numberOfSuccessors = numberOfChildren;
+			
+	  }
+
+	  public int getNumberOfSuccessors() {
+		  return numberOfSuccessors;
+	  }	  
+	 
 	  
 	  public void convertInputToVectors()
 	  {
@@ -247,7 +303,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      		invalidData.add(invalidTemp);
 	        }
 	      	
-	      	max = 10*(testOracleData.getTestTypeData().size()/10)+10;
+	      	max = 10*(validTestOracleData.getTestTypeData().size()/10)+10;
 	      	for(int row = 0; row < max; ++row)
 	      	{
 	      		Vector<Object> temp = new Vector<Object>();
@@ -255,16 +311,16 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      		for(int col = 0; col < 3; ++col)
 	      		{			
       					try{
-      						testOracleData.getTestTypeData().get(col);
+      						validTestOracleData.getTestTypeData().get(col);
       						if(col == 0)
       						{
-      							temp.add(testOracleData.getTestTypeData().get(col));
+      							temp.add(validTestOracleData.getTestTypeData().get(col));
       						}
       						else
       						{
-      							for(int index = 0; index < testOracleData.getTestData().get(col).length; ++index)
+      							for(int index = 0; index < validTestOracleData.getTestData().get(col).length; ++index)
           						{
-          							temp.add(testOracleData.getTestData().get(col)[index]);
+          							temp.add(validTestOracleData.getTestData().get(col)[index]);
           						}
       						}
       						
@@ -277,7 +333,41 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      		}
 	      		temp.insertElementAt(row+1, 0);
 	      		//System.out.println(temp);
-	      		testOracleTable.add(temp);
+	      		validTestOracleTable.add(temp);
+	      		
+	      	}
+	      	
+	     	max = 10*(invalidTestOracleData.getTestTypeData().size()/10)+10;
+	      	for(int row = 0; row < max; ++row)
+	      	{
+	      		Vector<Object> temp = new Vector<Object>();
+	      			
+	      		for(int col = 0; col < 3; ++col)
+	      		{			
+      					try{
+      						invalidTestOracleData.getTestTypeData().get(col);
+      						if(col == 0)
+      						{
+      							temp.add(invalidTestOracleData.getTestTypeData().get(col));
+      						}
+      						else
+      						{
+      							for(int index = 0; index < invalidTestOracleData.getTestData().get(col).length; ++index)
+          						{
+          							temp.add(invalidTestOracleData.getTestData().get(col)[index]);
+          						}
+      						}
+      						
+      						//System.out.println(userInput.get(col).getUserInputData().get(row));
+      					}
+      					catch(IndexOutOfBoundsException e){
+      						temp.add("");
+      					}	      						      			
+	      			      				
+	      		}
+	      		temp.insertElementAt(row+1, 0);
+	      		//System.out.println(temp);
+	      		invalidTestOracleTable.add(temp);
 	      		
 	      	}
 	      	
@@ -288,10 +378,10 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      	
 	  }
 	  
-	  @SuppressWarnings("null")
+
 	public void convertVectorsToInput(TestNode node)
 	  {
-
+		// CLEAR OUT VALID DATA, INVALID DATA, AND TEST ORACLE
 		  for(UserInput input : node.getUserInput())
 		  {
 				  input.getUserInputData().clear();		
@@ -302,12 +392,12 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 				  invalidInput.getUserInputData().clear();			 
 		  }
 		  
-		  testOracleData.getTestData().clear();
-		  testOracleData.getTestTypeData().clear();
-		  
-				//System.out.println(userInput.get(0).getInputID());
+		  validTestOracleData.getTestData().clear();
+		  validTestOracleData.getTestTypeData().clear();
+		  invalidTestOracleData.getTestData().clear();
+		  invalidTestOracleData.getTestTypeData().clear();
 		 
-		  
+		// CHANGE VALID DATA VECTOR TO USER INPUT TYPE
 		  for(Vector<Object> temp : node.getValidData())
 		  {
 				  for(int i = 1; i < temp.size(); ++i)
@@ -321,6 +411,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 				  }			  
 		  }		  
 		  
+		// CHANGE INVALID DATA VECTOR TO USER INPUT TYPE
 		  for(Vector<Object> temp : node.getInvalidData())
 		  {			  
 				  for(int i = 1; i < temp.size(); ++i)
@@ -336,7 +427,9 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 				  }			 
 		  }		
 		  
-		  for(Vector<Object> temp : node.getTestOracleTable())
+		  
+		  // CHANGE TEST ORACLE VECTOR TO TEST ORACLE TYPE
+		  for(Vector<Object> temp : node.getValidTestOracleTable())
 		  {			  
 			  		String[] tempStr = {"",""};
 				  for(int i = 1; i < 4; ++i)
@@ -345,7 +438,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 				
 					  if(!temp.get(i).equals("") && i==1)
 					  {
-						  testOracleData.addTestOracleTypeData(temp.get(i).toString());
+						  validTestOracleData.addTestOracleTypeData(temp.get(i).toString());
 						  //System.out.println(temp.get(i).toString());
 					  }
 					  else if(!temp.get(i).equals("") && i==2)
@@ -355,11 +448,37 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 					  else if(!temp.get(1).equals(""))
 					  {
 						  tempStr[1] = temp.get(i).toString();
-						  testOracleData.addTestOracleData(tempStr);						  
+						  validTestOracleData.addTestOracleData(tempStr);						  
 					  }
 						  
 				  }			 
 		  }	
-	  }	  
- 
+		  
+		  // CHANGE TEST ORACLE VECTOR TO TEST ORACLE TYPE
+		  for(Vector<Object> temp : node.getInvalidTestOracleTable())
+		  {			  
+			  		String[] tempStr = {"",""};
+				  for(int i = 1; i < 4; ++i)
+				  {
+					 
+				
+					  if(!temp.get(i).equals("") && i==1)
+					  {
+						  invalidTestOracleData.addTestOracleTypeData(temp.get(i).toString());
+						  //System.out.println(temp.get(i).toString());
+					  }
+					  else if(!temp.get(i).equals("") && i==2)
+					  {
+						  tempStr[0] = temp.get(i).toString();						  
+					  }
+					  else if(!temp.get(1).equals(""))
+					  {
+						  tempStr[1] = temp.get(i).toString();
+						  invalidTestOracleData.addTestOracleData(tempStr);						  
+					  }
+						  
+				  }			 
+		  }	
+	  }
+
 }

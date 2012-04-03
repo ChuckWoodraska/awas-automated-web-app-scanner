@@ -1,7 +1,6 @@
 package testtree;
 
 import input.AutoFormNavigator;
-import input.InputDataType;
 import input.MyFirefoxDriver;
 import input.MyHashTable;
 import input.UserInputGUI;
@@ -13,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent; 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,8 +46,6 @@ import javax.swing.event.TreeSelectionListener;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-
 import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 
 public class TestPanel extends JPanel implements Serializable, TreeSelectionListener, TreeModelListener, ActionListener {
@@ -96,6 +94,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 			this.newTab = newTab;
 		}
 		
+		@Override
 		public void run () {
 	    	System.out.println("URL: "+urlString);
 	    	testPanelInterface.updateUrlField(urlString);
@@ -143,7 +142,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	    int index = currentRootNode.getChildCount()+1;
 	    System.out.println("Number of forms: "+driver.findElements(By.tagName("form")).size());
 	    for (WebElement element: driver.findElements(By.tagName("form"))){
-	    	        currentRootNode.add(new TestNode(driver.getTitle(), driver.getCurrentUrl(), element.getAttribute("id"), true));
+	    	        currentRootNode.add(new TestNode(driver.getTitle(), driver.getCurrentUrl(), index+" "+element.getAttribute("id"), element.getAttribute("id"), true));
 	    	        index++;
 
 	    }
@@ -253,9 +252,11 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
         currentTestTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         currentTestTree.setShowsRootHandles(true);
 		currentTestTree.addMouseListener( new MouseAdapter() { 
+			@Override
 			public void mousePressed(MouseEvent e ) { 
 				checkForTriggerEvent(e); 
 			} 
+			@Override
 			public void mouseReleased(MouseEvent e ) { 
 				checkForTriggerEvent(e); 
 			}
@@ -346,6 +347,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     /////////////////////////////////////////////////////////////	
 
     // implements TreeSelectionListener
+	@Override
 	public void valueChanged(TreeSelectionEvent event) {
 		JTree currentTestTree = getCurrentTestTree();
 		if (event.getSource() == currentTestTree) {
@@ -365,6 +367,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	
     /////////////////////////////////////////////////////////////	
     // start - implement TreeModelListener
+	@Override
 	public void treeNodesChanged(TreeModelEvent e) {
             DefaultMutableTreeNode node;
             node = (DefaultMutableTreeNode)(e.getTreePath().getLastPathComponent());
@@ -380,11 +383,14 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
             System.out.println("The user has finished editing the node.");
             System.out.println("New value: " + node.getUserObject());
         }
+	@Override
 	public void treeNodesInserted(TreeModelEvent e) {
     }
-    public void treeNodesRemoved(TreeModelEvent e) {
+    @Override
+	public void treeNodesRemoved(TreeModelEvent e) {
     }
-    public void treeStructureChanged(TreeModelEvent e) {
+    @Override
+	public void treeStructureChanged(TreeModelEvent e) {
     }
     // end - implement TreeModelListener
 
@@ -472,46 +478,24 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     
     public void saveTree(){
     	
-    	String filename = "tree";
-    	FileOutputStream fos = null;
-    	ObjectOutputStream out = null;
-    	try
-    	{
-    		JTree tree = getCurrentTestTree();
-    		fos = new FileOutputStream(filename);
-    		out = new ObjectOutputStream(fos);
-    		out.writeObject(tree);
-    		out.close();
-    	}
-    	catch(IOException ex)
-    	{
-    		ex.printStackTrace();
-    	}
+    	JTree tree = getCurrentTestTree();
+    	File outputFile = new File("./savedTree.xls");
+    	try {
+			TestTreeFile.saveTestDataToExcelFile(tree, outputFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+
     }
     
     public void loadTree(){
-    	
-    	String filename = "tree"; 
-    	FileInputStream fis = null;
-    	ObjectInputStream in = null;
-    	try
-    	{
-    		ArrayList<JTree> tree = new ArrayList<JTree>();
-    		fis = new FileInputStream(filename);
-    		in = new ObjectInputStream(fis);
-    		tree.add((JTree)in.readObject());
-    		
-    		getCurrentTestTree().updateUI();
-    		in.close();
-    	}
-    	catch(IOException ex)
-    	{
-    		ex.printStackTrace();
-    	}
-    	catch(ClassNotFoundException ex)
-    	{
-    		ex.printStackTrace();
-    	}
+    	File inputFile = new File("./savedTree.xls");
+    	try {
+			TestTreeFile.loadTestDataFromExcelFile(inputFile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     
     private void replayNavigate(TestNode currentNode)
@@ -528,22 +512,15 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 			System.out.println("Start Recorded Inputs");
 			TestNode parentNode = (TestNode) currentNode.getParent();
 			parentNode.convertVectorsToInput(parentNode);
-			AutoFormNavigator afi = new AutoFormNavigator(parentNode.getCombinationalInput(),parentNode.getUserInput(),parentNode.getUserInputInvalid(), parentNode.getTestOracle());
+			AutoFormNavigator afi = new AutoFormNavigator(parentNode.getCombinationalInput(),parentNode.getUserInput(),parentNode.getUserInputInvalid(), parentNode.getValidTestOracle(),parentNode.getInvalidTestOracle());
 			
-//			TestNode temp = (TestNode) currentNode.getChildAt(0);
-//			ArrayList<int[]> formCombinationArrayList = new ArrayList<int[]>();
-//			ArrayList<String> buttonNames = new ArrayList<String>();
 			int[] combination = new int[currentNode.getRecordedInputs().get(0).getDataCombos().size()];
 				for(int i = 0; i < combination.length; ++i)
 				{
 					//System.out.println("" + child.getFullNodeInfo());
 					combination[i] = currentNode.getRecordedInputs().get(0).getDataCombos().get(i).intValue();
 				}
-//				formCombinationArrayList.add(combination);
-//				buttonNames.add(buttonName);
-//			}
-//			String formID;
-			
+
 			
 			
 			List<WebElement> allForms = driver.findElements(By.tagName("form"));
@@ -581,7 +558,8 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 		    getCurrentTestTree().updateUI();
     }
     
-    public void actionPerformed(ActionEvent e) {
+    @Override
+	public void actionPerformed(ActionEvent e) {
     	String command = e.getActionCommand();
     	if (command == TestCommands.NAVIGATE_COMMAND || command == TestCommands.NAVIGATE_NEWTAB_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();
@@ -589,7 +567,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     		if(currentNode.isForm())
     		{
     			currentNode.convertVectorsToInput(currentNode);
-    			AutoFormNavigator afi = new AutoFormNavigator(currentNode.getCombinationalInput(),currentNode.getUserInput(),currentNode.getUserInputInvalid(), currentNode.getTestOracle());
+    			AutoFormNavigator afi = new AutoFormNavigator(currentNode.getCombinationalInput(),currentNode.getUserInput(),currentNode.getUserInputInvalid(), currentNode.getValidTestOracle(),currentNode.getInvalidTestOracle());
     			afi.navigatePage(currentNode.getURL());
     			int index = 1;
     		    for (TestNode node : afi.testNodes){
@@ -613,7 +591,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     		}
     	} else if (command == TestCommands.EDIT_TABLE_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();
-    		String formName = currentNode.getID();
+    		String formName = currentNode.getFormName();
     		String url = currentNode.getURL();
     		if(currentNode.noTable)
     		{

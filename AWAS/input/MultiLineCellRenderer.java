@@ -86,7 +86,8 @@ public class MultiLineCellRenderer extends JTextArea implements TableCellRendere
 		setOpaque(true);
 	}
  
-  public Component getTableCellRendererComponent(JTable table, Object value,
+  @Override
+public Component getTableCellRendererComponent(JTable table, Object value,
                boolean isSelected, boolean hasFocus, int row, int column) {
     if (isSelected) {
       setForeground(table.getSelectionForeground());
@@ -138,12 +139,14 @@ public class MultiLineCellRenderer extends JTextArea implements TableCellRendere
 class MyEditorKit extends StyledEditorKit{
 	private static final long serialVersionUID = 1L;
 
+	@Override
 	public ViewFactory getViewFactory(){
 	    return new StyledViewFactory();
     }
 
     static class StyledViewFactory implements ViewFactory{
-    	public View create(Element elem){
+    	@Override
+		public View create(Element elem){
 		    String kind = elem.getName();
 
 		    if (kind != null){
@@ -175,6 +178,7 @@ class CenteredBoxView extends BoxView {
 	    super(elem,axis);
     }
 
+	@Override
 	protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets, int[] spans) {
 	    super.layoutMajorAxis(targetSpan,axis,offsets,spans);
 		int textBlockHeight = 0;

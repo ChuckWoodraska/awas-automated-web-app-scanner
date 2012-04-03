@@ -15,6 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
 
 public class ProgressDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -43,7 +44,8 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		setContentPane(progressPanel);
 		
 	    addWindowListener(new WindowAdapter() {
-	        public void windowClosing(WindowEvent e) {
+	        @Override
+			public void windowClosing(WindowEvent e) {
 	        	if (workingThread!=null)
 	        		workingThread.stop();
 	        }
@@ -73,7 +75,7 @@ public class ProgressDialog extends JDialog implements ActionListener {
 		setVisible(false);
         setModal(true);
         
-        progressLabel = new JLabel(message, JLabel.CENTER);
+        progressLabel = new JLabel(message, SwingConstants.CENTER);
 
         JButton confirm = new JButton("OK");
         confirm.setActionCommand("OK");
@@ -95,6 +97,7 @@ public class ProgressDialog extends JDialog implements ActionListener {
         pack();
 	}
 	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if ("OK".equals(e.getActionCommand())) {
 			dispose();

@@ -49,6 +49,7 @@ public class SeparateTableCellEditor extends JDialog implements ActionListener {
         return pane;
     }
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand() == OK) {
 			originalTextArea.setText(newTextArea.getText());

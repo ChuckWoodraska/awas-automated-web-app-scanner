@@ -88,7 +88,8 @@ public class ComboListTable extends JPanel
     }
  
     class DeleteListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
             //This method can be called only if
             //there's a valid selection
             //so go ahead and remove whatever's selected.
@@ -123,7 +124,8 @@ public class ComboListTable extends JPanel
         }
  
         //Required by ActionListener.
-        public void actionPerformed(ActionEvent e) {
+        @Override
+		public void actionPerformed(ActionEvent e) {
 //            String name = inputName.getText();
 // 
 //            //User didn't type in a unique name...
@@ -203,7 +205,8 @@ public class ComboListTable extends JPanel
     }
  
     //This method is required by ListSelectionListener.
-    public void valueChanged(ListSelectionEvent e) {
+    @Override
+	public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting() == false) {
  
             if (list.getSelectedIndex() == -1) {
@@ -244,7 +247,8 @@ public class ComboListTable extends JPanel
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
                 createAndShowGUI();
             }
         });

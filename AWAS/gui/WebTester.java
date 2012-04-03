@@ -5,11 +5,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,7 +18,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.JTree;
 import javax.swing.UIManager;
 
 import testtree.TestCommands;
@@ -156,7 +150,8 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
         toolBar.add(urlField);
     }
 
- 	public void updateUrlField(String urlString){
+ 	@Override
+	public void updateUrlField(String urlString){
 		if (urlField!=null)
 			urlField.setText(urlString);
  	
@@ -199,7 +194,8 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
 		return contentPanel;
 	}
 	
-    public void actionPerformed(ActionEvent e) {
+    @Override
+	public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
         if (MenuCommands.OPEN_COMMAND.equals(cmd)) {
         	testPanel.loadTree();
@@ -209,9 +205,9 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
         } 
         else if (MenuCommands.NEW_COMMAND.equals(cmd)) { 
         	testPanel.removeAllTestTrees();        	        
-        	testPanel.navigate(null, "http://www.google.com/", false);
-        	//testPanel.navigate(null, "http://localhost:52989/SelTest/Default.aspx", false);
-        	//testPanel.navigate(null, "http://localhost:55387/FileUploadTest/Default.aspx", false);
+        	//testPanel.navigate(null, "http://www.google.com/", false);
+        	//testPanel.navigate(null, "http://localhost:61730/AWASSandbox/Default.aspx", false);
+        	testPanel.navigate(null, "http://demo.magentocommerce.com/", false);
         
          
 //        testPanel.createSampleTree();
@@ -220,14 +216,6 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
         else if (MenuCommands.SAVE_COMMAND.equals(cmd)) { 
         	testPanel.saveTree();
 
-        	
-        	//testPanel.removeAllTestTrees();        	
-        	//testPanel.navigate(null, "http://www.google.com/", false);
-        	//testPanel.navigate(null, "http://localhost:52989/SelTest/Default.aspx", false);
-        	//testPanel.navigate(null, "http://localhost:55387/FileUploadTest/Default.aspx", false);
-        
-         
-//        testPanel.createSampleTree();
 
         }
         else {
@@ -260,7 +248,8 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
     public static void main(String[] args) {
     	setLookAndFeel();
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
                 createAndShowGUI();
             }
         });

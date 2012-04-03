@@ -6,6 +6,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import testtree.TestNode;
 
@@ -27,9 +29,10 @@ public class UserInputGUI extends JPanel {
     public void showUserInput()
     {
 
-    	GeneralTablePanel tablePanel = new GeneralTablePanel(node.getValidData(), node.columnNames, node.getUserInput().size()+1);
-    	GeneralTablePanel tablePanel2 = new GeneralTablePanel(node.getInvalidData(), node.columnNames, node.getUserInputInvalid().size()+1);
-    	GeneralTablePanel testOracleTable = new GeneralTablePanel(node.getTestOracleTable(), node.columnNamesTestOracleTable, 4);
+    	GeneralTablePanel validDataPanel = new GeneralTablePanel(node.getValidData(), node.columnNames, node.getUserInput().size()+1);
+    	GeneralTablePanel invalidDataPanel = new GeneralTablePanel(node.getInvalidData(), node.columnNames, node.getUserInputInvalid().size()+1);
+    	GeneralTablePanel validTestOracleTable = new GeneralTablePanel(node.getValidTestOracleTable(), node.columnNamesTestOracleTable, 4);
+    	GeneralTablePanel invalidTestOracleTable = new GeneralTablePanel(node.getInvalidTestOracleTable(), node.columnNamesTestOracleTable, 4);
     	
     	ArrayList<String> s = new ArrayList<String>();
     	node.userInputCombos.getDataInputs();
@@ -38,53 +41,54 @@ public class UserInputGUI extends JPanel {
     		s.add(node.columnNames[i]);
     	}
     	
-    	
-    	
-//    	for(int i = 0; i < node.userInputCombos.getDataInputs().size(); ++i)
-//    	{
-//    		for(int j = 0; j < node.userInputCombos.getDataInputs().get(i).getSize(); ++j)
-//    		{
-//        		s1.addAll(node.userInputCombos.getDataInputs().get(j).getInputName());
-//    		}
-//    	}
-    	
         //Create and set up the content pane.
-        JComponent newContentPane = new ComboListTable(s, node);
-        newContentPane.setOpaque(true); //content panes must be opaque
+        JComponent comboListTable = new ComboListTable(s, node);
+        comboListTable.setOpaque(true); //content panes must be opaque
+        
+        JPanel validPanel = new JPanel();
+        JPanel invalidPanel = new JPanel();
         
 		JFrame frame = new JFrame("Table");
 		   frame.addWindowListener( new WindowAdapter() {
-			      public void windowClosing( WindowEvent e ) {
+			      @Override
+				public void windowClosing( WindowEvent e ) {
 			        //System.exit(0);
 			      }
 			    });
+	    
+	   JScrollPane validDataPane = new JScrollPane(validDataPanel);
+	   JScrollPane invalidDataPane = new JScrollPane(invalidDataPanel);
+	   JScrollPane comboListPane = new JScrollPane(comboListTable);
+	   JScrollPane validTestOraclePane = new JScrollPane(validTestOracleTable);
+	   JScrollPane invalidTestOraclePane = new JScrollPane(invalidTestOracleTable);
 	   
-		   
-		   
-		   
-	   JScrollPane scrollpane = new JScrollPane(tablePanel);
-	   JScrollPane scrollpane2 = new JScrollPane(tablePanel2);
-	   JScrollPane scrollpane3 = new JScrollPane(newContentPane);
-	   JScrollPane scrollpane4 = new JScrollPane(testOracleTable);
+	   // Valid Data
+	   validPanel.add(validDataPane);
+	   validPanel.add(validTestOraclePane);
+	   // Invalid Data
+	   invalidPanel.add(invalidDataPane);
+	   invalidPanel.add(invalidTestOraclePane);
+	   
+	   
 	   // JComponent panel2 = makeTextPanel("INVALID");
 	   JTabbedPane tabbedPane = new JTabbedPane();
-	   tabbedPane.addTab("Valid", scrollpane);
-	   tabbedPane.addTab("Invalid", scrollpane2);
-	   tabbedPane.addTab("Combinations", scrollpane3);
-	   tabbedPane.addTab("Test Oracle", scrollpane4);
+	   tabbedPane.addTab("Valid", validPanel);
+	   tabbedPane.addTab("Invalid", invalidPanel);
+	   tabbedPane.addTab("Combinations", comboListPane);
+	   //tabbedPane.addTab("Test Oracle", validTestOraclePane);
 	   
 	   //scrollpane.setPreferredSize(MainFrame.EditPanelSize);
 	   frame.getContentPane().add(tabbedPane);
 	   frame.pack();
 	   frame.setVisible(true);
-	   frame.setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
+	   frame.setDefaultCloseOperation( WindowConstants.DISPOSE_ON_CLOSE );
     	
     }
     
     protected JComponent makeTextPanel(String text) {
         JPanel panel = new JPanel(false);
         JLabel filler = new JLabel(text);
-        filler.setHorizontalAlignment(JLabel.CENTER);
+        filler.setHorizontalAlignment(SwingConstants.CENTER);
         panel.setLayout(new GridLayout(1, 1));
         panel.add(filler);
         return panel;

@@ -44,6 +44,7 @@ public class GeneralTableModel extends AbstractTableModel {
 		return data;
 	}
 		
+	@Override
 	public String getColumnName(int column) {
 		return columnNames[column];
 	}
@@ -52,22 +53,26 @@ public class GeneralTableModel extends AbstractTableModel {
 		columnNames[column] = name;
 	}
 
-    @SuppressWarnings("unchecked")
+    @Override
+	@SuppressWarnings("unchecked")
 	public Class getColumnClass(int columnIndex) {
 //    	if (columnIndex==0)
 //    		return Integer.class;
         return String.class;
     }
 
+	@Override
 	public boolean isCellEditable(int row, int column) {
 		return column!=0 && editable;
 	}
 	
+	@Override
 	public Object getValueAt(int row, int column) {
 		Vector<Object> rowVector = data.get(row);
 		return rowVector.get(column);
 	}
 
+	@Override
 	public void setValueAt(Object value, int row, int column) {
 		Vector<Object> rowVector = data.get(row);
 		rowVector.set(column, value);
@@ -94,10 +99,12 @@ public class GeneralTableModel extends AbstractTableModel {
 		return true;
 	}
 	
+	@Override
 	public int getRowCount() {
 		return data.size();
 	}
 
+	@Override
 	public int getColumnCount() {
 		return columnNames.length;
 	}
@@ -150,6 +157,7 @@ public class GeneralTableModel extends AbstractTableModel {
 		}
 	}
 	
+	@Override
 	public String toString(){
 		String result = "";
 		for (int i=0; i<data.size(); i++){
@@ -196,7 +204,8 @@ String[] columnNames = {"1", "2", "3", "4"};
 
 		JFrame frame = new JFrame("Table");
 		   frame.addWindowListener( new WindowAdapter() {
-			      public void windowClosing( WindowEvent e ) {
+			      @Override
+				public void windowClosing( WindowEvent e ) {
 			        System.exit(0);
 			      }
 			    });

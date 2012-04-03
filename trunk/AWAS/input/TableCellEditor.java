@@ -35,11 +35,13 @@ public class TableCellEditor extends DefaultCellEditor implements ActionListener
 	    delegate = new DefaultCellEditor.EditorDelegate() {
 			private static final long serialVersionUID = 1L;
 			
+			@Override
 			public void setValue(Object value) {
 				textArea.setFont(font);
 				textArea.setText((value != null) ? value.toString() : "");
 			}
 			
+			@Override
 			public Object getCellEditorValue() {
 				return textArea.getText();
 			}
@@ -59,9 +61,11 @@ public class TableCellEditor extends DefaultCellEditor implements ActionListener
 		createPopupMenuItem(popupMenu, editCellInNewWindow, editCellInNewWindow);
 		
 		textArea.addMouseListener( new MouseAdapter() { 
+			@Override
 			public void mousePressed( MouseEvent e ) { 
 				checkForTriggerEvent(e); 
 			} 
+			@Override
 			public void mouseReleased( MouseEvent e ) { 
 				checkForTriggerEvent(e); 
 			}
@@ -71,6 +75,7 @@ public class TableCellEditor extends DefaultCellEditor implements ActionListener
 				}	
 			} 
 			
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2 && !e.isConsumed()) {
 					e.consume();
@@ -87,6 +92,7 @@ public class TableCellEditor extends DefaultCellEditor implements ActionListener
 		return menuItem;
 	}
 	
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand() == editCellInNewWindow) {
 			new SeparateTableCellEditor(textArea);

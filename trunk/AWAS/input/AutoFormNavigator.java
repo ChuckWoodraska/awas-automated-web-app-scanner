@@ -1,35 +1,8 @@
 package input;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -55,12 +28,13 @@ public class AutoFormNavigator  {
 	public static final String KEYWORD_INPUT 	= "input";
 	public static final String KEYWORD_SELECT 	= "select";
 	
-	public AutoFormNavigator(CombinationalInputs userInputCombos, ArrayList<UserInput> userInput, ArrayList<UserInput> invalidInput, TestOracle testOracle)
+	public AutoFormNavigator(CombinationalInputs userInputCombos, ArrayList<UserInput> userInput, ArrayList<UserInput> invalidInput, TestOracle validTestOracle, TestOracle invalidTestOracle)
 	{
 		this.userInputCombos = userInputCombos;
 		this.userInput = userInput;
 		this.invalidInput = invalidInput;
-		this.testOracle = testOracle;
+		this.validTestOracle = validTestOracle;
+		this.invalidTestOracle = invalidTestOracle;
 	}
 	
 	
@@ -71,18 +45,8 @@ public class AutoFormNavigator  {
 	public int pointerToFirstButton = 0;
 	
 	// POSSIBLE URLs
-    //static String URL = "https://audience.nba.com/services/msib/flow/login?url=http%3A%2F%2Fwww.nba.com%2F";
-	//static String URL = "http://www.youtube.com/create_account?next=%2F";
-	//static String URL = "http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_form_submit";
-	//static String URL = "https://www.google.com/accounts/ServiceLogin?uilel=3&service=youtube&passive=true&continue=http%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26nomobiletemp%3D1%26hl%3Den_US%26next%3D%252Findex&hl=en_US&ltmpl=sso";
-	//static String URL = "https://login.yahoo.com/config/login?.src=fpctx&.intl=us&.done=http%3A%2F%2Fwww.yahoo.com%2F&rl=1";
-	//static String URL = "http://localhost:52989/SelTest/Default.aspx";
-	//static String URL = "http://localhost:53239/SelectmultipleTest/Default.aspx";
-	//static String URL = "http://localhost:55387/FileUploadTest/Default.aspx";
-	//static String URL = "https://members.aesc.org/iweb/";
 	//static String URL = "http://webgoat:webgoat@localhost/WebGoat/attack";
-	static String URL = "http://google.com"; //WONT WORK AJAX 
-	//static String URL = "https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=11&ct=1305216662&rver=6.0.5276.0&wp=MBI&wreply=http:%2F%2Fwww.bing.com%2FPassport.aspx%3Frequrl%3Dhttp%253a%252f%252fwww.bing.com%253a80%252frewards%252fsignup%252fSignIn%253flandingAction%253dWeb&lc=1033&id=264960&ru=http%3a%2f%2fwww.bing.com%2fPassport.aspx%3frequrl%3dhttp%253a%252f%252fwww.bing.com%253a80%252frewards%252fsignup%252fSignIn%253flandingAction%253dWeb";
+	static String URL;
 	
 	// TEST INPUT COMBINATIONS
 	//CombinationalInput userInputCombos = new CombinationalInput(0, new ArrayList<InputRecord>());
@@ -102,7 +66,10 @@ public class AutoFormNavigator  {
 	public ArrayList<TestNode> testNodes = new ArrayList<TestNode>();
 	//public ArrayList<FormGroup> formGroups = new ArrayList<FormGroup>();
 	public FormGroup formGroup;
-	public TestOracle testOracle;
+	public TestOracle validTestOracle;
+	public TestOracle invalidTestOracle;
+	
+	private Boolean testOracleValid = true;
 	
 
 	// BROWSER SETUP
@@ -159,15 +126,8 @@ public class AutoFormNavigator  {
         for (WebElement form : allForms){        
         	testCount = 0;        	        	
         	formID = form.getAttribute(KEYWORD_ID);
-        	//readUserInput("test");
-        	//System.out.println("After user input");
         	navigateForm(driver.getCurrentUrl(), form);
-        	
-        	// Create Test Node and Add to Test Node List    	
-//        	TestNode testnode = new TestNode(driver.getTitle(), driver.getCurrentUrl(), formID);    	
-//        	testnode.setFormGroup(formGroup);    	
-//        	testNodes.add(testnode);
-        	
+        	        	
         	++formIndex; 
         	System.out.println("Total Tests: "+ testCount);
 
@@ -176,9 +136,7 @@ public class AutoFormNavigator  {
         driver.close();
         driver2.close();
         
-    }
-    
-    
+    }       
     
 	private void navigateForm(String url, WebElement form){
 		System.out.println("Form: "+form.getAttribute(KEYWORD_ID));			
@@ -479,6 +437,9 @@ public class AutoFormNavigator  {
 				}
 			}
 		}	
+		try{
+
+		
 		if(invalidInput.get(0).getSize() > 0)
 		{
 			choices = getFormInputChoices(formInputs.get(0));
@@ -549,6 +510,10 @@ public class AutoFormNavigator  {
 				}
 			}
 		}
+
+		}
+		catch(IndexOutOfBoundsException e){
+		}
 		// COUNT TESTS
 		testCount += choices * (formInputs.size()-pointerToFirstButton);
 	}
@@ -579,9 +544,9 @@ public class AutoFormNavigator  {
 						{
 							formInputIndexes[j] = index;					
 						}
-				}catch(ClassCastException e){
+					}catch(ClassCastException e){
 					
-				}
+					}
 				}
 			}
 		}
@@ -852,6 +817,7 @@ public class AutoFormNavigator  {
 				case TEXTINPUT: 
 								if(choiceIndex < 0)
 								{
+									testOracleValid = false;
 									int tempChoiceIndex =  (choiceIndex + 1) * (-1);
 									for(int i = 0; i < invalidInput.size(); ++i)
 									{
@@ -889,6 +855,7 @@ public class AutoFormNavigator  {
 				case TEXTAREAINPUT: 
 									if(choiceIndex < 0)
 									{
+										testOracleValid = false;
 										int tempChoiceIndex =  (choiceIndex + 1) * (-1);
 										for(int i = 0; i < invalidInput.size(); ++i)
 										{
@@ -926,6 +893,7 @@ public class AutoFormNavigator  {
 				case PASSWORDINPUT: 
 								if(choiceIndex < 0)
 								{
+									testOracleValid = false;
 									int tempChoiceIndex =  (choiceIndex + 1) * (-1);
 									for(int i = 0; i < invalidInput.size(); ++i)
 									{
@@ -1213,7 +1181,7 @@ public class AutoFormNavigator  {
 //    	}
 
     	currentDriver = testOracle(currentDriver);
-
+    	testOracleValid = true;
     	//System.out.println("Below testOracle");
     	formGroup = new FormGroup(formIndex, formID, new ArrayList<FormRecord>());
     	formGroup.addFormInput(formrecord);
@@ -1231,15 +1199,28 @@ public class AutoFormNavigator  {
     	WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("", currentDriver);
     	int index = 0; 
 
-    	while(index < testOracle.getTestTypeData().size())
+    	if(testOracleValid)
     	{
-    		result = webDriverCommandProcessor.doCommand(testOracle.getTestTypeData().get(index), testOracle.getTestData().get(index));
-    		System.out.println(result);
-    		++index;
+        	while(index < validTestOracle.getTestTypeData().size())
+        	{
+        		result = webDriverCommandProcessor.doCommand(validTestOracle.getTestTypeData().get(index), validTestOracle.getTestData().get(index));
+        		System.out.println(result);
+        		++index;
+        	}
     	}
-    	
+    	else
+    	{
+        	while(index < invalidTestOracle.getTestTypeData().size())
+        	{
+        		result = webDriverCommandProcessor.doCommand(invalidTestOracle.getTestTypeData().get(index), invalidTestOracle.getTestData().get(index));
+        		System.out.println(result);
+        		++index;
+        	}
+    	}
+
     	return currentDriver;
     }
+
     
     public void signout(WebDriver driver){
     	String[] signout = {"SIGNOUT", "Sign Out", "Signout", "Log Out", "Logout" , "Sign out"}; 

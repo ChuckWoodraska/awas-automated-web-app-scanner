@@ -10,8 +10,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,7 +23,8 @@ public class UserInputReader {
 	private CombinationalInputs userInputCombos = new CombinationalInputs(new ArrayList<ComboInput>());
 	private ArrayList<UserInput> userInput = new ArrayList<UserInput>();
 	private ArrayList<UserInput> userInputInvalid = new ArrayList<UserInput>();
-	private TestOracle testOracle = new TestOracle();
+	private TestOracle validTestOracle = new TestOracle();
+	private TestOracle invalidTestOracle = new TestOracle();
 	private int currentRow = 0;
 	
 	private String path;
@@ -41,7 +40,7 @@ public class UserInputReader {
 		WebDriver driver = new MyFirefoxDriver(); 
 		driver.get(url);
 		WebElement form = driver.findElement(By.id(formName));
-		AutoFormNavigator afi = new AutoFormNavigator(userInputCombos, userInput, userInputInvalid, testOracle);
+		AutoFormNavigator afi = new AutoFormNavigator(userInputCombos, userInput, userInputInvalid, validTestOracle, invalidTestOracle);
 		List<Object> inputs = afi.collectAllFormInputElements(form);
 		for(int index=0; index<afi.pointerToFirstButton; index++){
 			Object formInputElement = inputs.get(index);

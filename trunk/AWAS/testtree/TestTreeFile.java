@@ -105,7 +105,7 @@ public class TestTreeFile {
 		numberOfChildrenCell.setCellValue(numberOfChildren);
 
 		Cell negativeCell = currentRow.createCell(4);
-		//negativeCell.setCellValue(node.isNegative());
+		negativeCell.setCellValue("");
 
 		Cell markingCell = currentRow.createCell(5);
 		markingCell.setCellValue("");
@@ -191,7 +191,7 @@ public class TestTreeFile {
 
 	//////////////////////////////////////////////////////
 	// read test data from excel file	
-	public static void loadTestDataFromExcelFile(File testDataFile) {
+	public static TestNode loadTestDataFromExcelFile(File testDataFile) {
 		try {
 			HSSFWorkbook workBook = new HSSFWorkbook (new FileInputStream(testDataFile));
 			Sheet sheet = workBook.getSheetAt(0);
@@ -203,18 +203,22 @@ public class TestTreeFile {
 			//if (versionCell==null || midCell==null)
 				//throw new Exception(LocaleBundle.bundleString("Invalid test data format"));
 //			updateSystemOptions(headerRow); 
-			TestNode root = new TestNode("Root");
-			JTree tree = new JTree(root, false);
+		
 //			if (mid.checkAttackTransition()==null){
 //				for (Transition transition: mid.getTransitions())
 //					if (transition.isAttackTransition())
 //						mid.addHiddenPlaceOrEvent(transition.getEvent());
 //			}	
-			ProgressDialog progressDialog = new ProgressDialog(null, null, null);
-			TestTreeLoader testImport = new TestTreeLoader(progressDialog, tree, testDataFile, sheet);
-			Thread testImportThread = new Thread(testImport);
-			testImportThread.start();
-			progressDialog.setVisible(true);
+			//ProgressDialog progressDialog = new ProgressDialog(null, "Load Tree", "Loading Tree...");
+			TestTreeLoader testImport = new TestTreeLoader(null, testDataFile, sheet);
+			//Thread testImportThread = new Thread(testImport);
+
+			//testImportThread.start();
+			//progressDialog.setVisible(true);
+			TestNode root = TestTreeFile.loadAllNodes(null, sheet);
+			//System.out.println(root.getChildCount());
+
+			return root;
 			
 		}
 		catch (Exception e){
@@ -222,6 +226,8 @@ public class TestTreeFile {
 			//kernel.print(LocaleBundle.bundleString("Invalid test data format"));
 			System.out.println("Problem in loadTestDataFromExcelFile");
 		}
+		TestNode node = null;
+		return node;
 		
 	}
 	
@@ -232,19 +238,19 @@ public class TestTreeFile {
 		
 	}
 	
-	static public void loadAllNodes(ProgressDialog progressDialog, JTree tree, Sheet sheet) throws Exception {
+	static public TestNode loadAllNodes(ProgressDialog progressDialog, Sheet sheet) throws Exception {
 		int numberOfRows = sheet.getPhysicalNumberOfRows();
 		
 		TestNode root = readRootFiring(sheet);
 		LinkedList<TestNode> queue = new LinkedList<TestNode>();
 		queue.addLast(root);	
 		while (!queue.isEmpty()) {
-			//tree.checkForCancellation();
+			//root.checkForCancellation();
 			TestNode node = queue.poll();
-			//progressDialog.setMessage(LocaleBundle.bundleString("Loading")+" "+rowIndex+" "+LocaleBundle.bundleString("out of")+" "+numberOfRows+"...");
-System.out.println("node: "+node);	
+			//progressDialog.setMessage("Loading "+rowIndex+" out of "+numberOfRows+"...");
+//System.out.println("node: "+node);	
 			int numberOfChildren = node.getNumberOfSuccessors();
-System.out.println("#Children: "+numberOfChildren);	
+//System.out.println("#Children: "+numberOfChildren);	
 			if (numberOfChildren>0) {
 				for (int i=0; i<numberOfChildren; ++i){
 					//tree.checkForCancellation();
@@ -260,6 +266,7 @@ System.out.println("#Children: "+numberOfChildren);
 			}
 		}		
 		//root.resetChildrenOutlineNumbers(tree.getSystemOptions().getMaxIdDepth());
+		return root;
 		
 	} 
 
@@ -271,7 +278,7 @@ System.out.println("#Children: "+numberOfChildren);
 	        //throw new IOException(LocaleBundle.bundleString("Incorrect test data format"));	 
 	    }
 		Cell numberOfChildrenCell = rootRow.getCell(3);
-		TestNode root = new TestNode("root");
+		TestNode root = new TestNode("Root", "Root", "Root");
 		root.setNumberrOfSuccessors(getNumberOfChildren(numberOfChildrenCell.toString()));
 		return root;
 	}
@@ -279,9 +286,9 @@ System.out.println("#Children: "+numberOfChildren);
 	static private int getNumberOfChildren(String numberString) throws IOException{
 		int numberOfChildren = 0;
 		try {
-			System.out.println("got children");	
+			//System.out.println("got children");	
 			numberOfChildren = (int)Double.parseDouble(numberString);
-			System.out.println("Number of Children"+numberOfChildren);
+			//System.out.println("Number of Children"+numberOfChildren);
 		}
 		catch (NumberFormatException e){
 			//throw new IOException(LocaleBundle.bundleString("Incorrect test data format"));
@@ -298,12 +305,12 @@ System.out.println("#Children: "+numberOfChildren);
 	    Row rootRow = sheet.getRow(rowIndex++);
 	   //if (rootRow==null)
 	       // throw new IOException(LocaleBundle.bundleString("Incorrect test data format"));	        
-	    Cell nodeNumberCell = rootRow.getCell(0);
-System.out.println("Node number "+nodeNumberCell.toString());
+	    Cell idNumberCell = rootRow.getCell(0);
+//System.out.println("Node number "+nodeNumberCell.toString());
 	    //if (!parent.getOutlineNumber().equals(""))
 	    	//assert nodeNumberCell.toString().startsWith(parent.getOutlineNumber()): LocaleBundle.bundleString("Incorrect test data format");
-        Cell transitionIndexCell = rootRow.getCell(1);
-        Cell substitutionCell = rootRow.getCell(2);
+        Cell titleCell = rootRow.getCell(1);
+        Cell urlCell = rootRow.getCell(2);
 		Cell numberOfChildrenCell = rootRow.getCell(3);
 		Cell negativeCell = rootRow.getCell(4);
 		Cell markingCell = rootRow.getCell(5);
@@ -314,10 +321,11 @@ System.out.println("Node number "+nodeNumberCell.toString());
 		//Substitution substitution = getSubstitution(substitutionCell.toString());
 		//Marking marking = getMarking(markingCell.toString());
 		//boolean negative = negativeCell.toString().equalsIgnoreCase("true");
-		TestNode newNode = new TestNode(transitionIndexCell.toString(), nodeNumberCell.toString(), substitutionCell.toString(),false);
+		TestNode newNode = new TestNode(titleCell.toString(), urlCell.toString(), idNumberCell.toString(),false);
+		parent.add(newNode);
 		newNode.setParent(parent);
 		newNode.setNumberrOfSuccessors(getNumberOfChildren(numberOfChildrenCell.toString()));
-System.out.println("read node: "+newNode);	
+//System.out.println("read node: "+newNode);	
 		
 		return newNode;
 	}
@@ -379,6 +387,7 @@ System.out.println("read node: "+newNode);
 //		if (dataVector.size()>0)
 //			node.setParaTable(new ParaTableModel(dataVector));
 	}
+	
 	
 	
 }

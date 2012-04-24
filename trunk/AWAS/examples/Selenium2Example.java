@@ -21,7 +21,7 @@ import org.openqa.selenium.By;
 	        	System.out.println("text: "+element.getText());
 	        	System.out.println("id: "+element.getAttribute("id"));
 	        	System.out.println("class: "+element.getAttribute("class"));
-System.out.println(element);
+	        	System.out.println(element);
 
 //		        element.sendKeys("Cheese!");
 //		        element.submit();

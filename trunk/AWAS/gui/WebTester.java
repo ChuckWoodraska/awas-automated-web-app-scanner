@@ -207,7 +207,9 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
         	testPanel.removeAllTestTrees();        	        
         	//testPanel.navigate(null, "http://www.google.com/", false);
         	//testPanel.navigate(null, "http://localhost:61730/AWASSandbox/Default.aspx", false);
-        	testPanel.navigate(null, "http://demo.magentocommerce.com/", false);
+        	//testPanel.navigate(null, "http://demo.magentocommerce.com/", false);
+        	testPanel.navigate(null, "http://24.111.169.202", false);
+        	//testPanel.navigate(null, "http://www.amazon.com", false);
         
          
 //        testPanel.createSampleTree();

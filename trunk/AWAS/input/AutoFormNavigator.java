@@ -1169,6 +1169,7 @@ public class AutoFormNavigator  {
     	catch ( StaleElementReferenceException e){
     		System.out.println("Error at Submit in elementClick");
     	}
+    	String URL2 = currentDriver.getCurrentUrl();
 //    	Alert alert = currentDriver.switchTo().alert();
 //    	if (alert!=null){
 //    		try {
@@ -1186,7 +1187,7 @@ public class AutoFormNavigator  {
     	formGroup = new FormGroup(formIndex, formID, new ArrayList<FormRecord>());
     	formGroup.addFormInput(formrecord);
     	
-    	TestNode node = new TestNode(formID , URL, formIndex+"", formGroup.getFormInputs(), false);
+    	TestNode node = new TestNode(formID , URL2, formIndex+"", formGroup.getFormInputs(), false);
     	testNodes.add(node);
     	
     	System.out.println(currentDriver.getCurrentUrl());

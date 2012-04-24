@@ -123,18 +123,27 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 
 	private void navigateHyperLinks(TestNode currentRootNode, String parentID){
 	    int index = currentRootNode.getChildCount()+1;
+	    int count = 0;
 	    System.out.println("Number of anchors: "+driver.findElements(By.tagName("a")).size());
 	    for (WebElement element: driver.findElements(By.tagName("a"))){
+	    	
 	     	String hrefAttributeString = element.getAttribute("href");
+	     	 System.out.println("After href"+count);
 	    	if (isHyperLink(hrefAttributeString)){
 	    	    String existingLink = (String)links.get(hrefAttributeString);
+	    	    System.out.println("if");
+
 	    	    if (existingLink==null || !existingLink.equalsIgnoreCase(hrefAttributeString)){
 	    	        currentRootNode.add(new TestNode(element.getText(), hrefAttributeString, parentID+index, false));
 	    	        index++;
 	    	        links.put(hrefAttributeString, hrefAttributeString);
+	    		    System.out.println("2nd if");
+
 	    	    }
 	    	}	
+	    	count++;
 	    }
+	    System.out.println("Where are we");
 
 	}
 	
@@ -149,11 +158,17 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	}
 	
     private boolean isHyperLink(String hrefAttribute){
+	   try{ 
     	return hrefAttribute.startsWith("http");
+	   }
+	   catch (NullPointerException e){
+		   return false;
+	   }
     }
     
     @SuppressWarnings("unchecked")
 	private void presentTestTree(TestNode currentRootNode, boolean isNewTree){
+    	
 	    if (currentRootNode.getChildCount()>0){
 	    	if (isNewTree)
 	    		createTestTree(currentRootNode);
@@ -239,10 +254,12 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     }
     
     private void createTestTree(TestNode rootNode){
+    	//System.out.println(rootNode.getID());
     	DefaultTreeModel currentTreeModel = new DefaultTreeModel(rootNode);
         currentTreeModel.addTreeModelListener(this);
         JTree currentTestTree = new JTree(currentTreeModel);        
     	testTrees.add(currentTestTree);
+    	System.out.println(rootNode.toString());
 		tabbedPane.addTab(rootNode.toString(), new JScrollPane(currentTestTree));
 		tabbedPane.setSelectedIndex(testTrees.size()-1);
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount()-1, new ButtonTabComponent(rootNode.toString(), "tree.png", tabbedPane.getTabCount()>1, this));
@@ -492,10 +509,15 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     public void loadTree(){
     	File inputFile = new File("./savedTree.xls");
     	try {
-			TestTreeFile.loadTestDataFromExcelFile(inputFile);
+    		TestNode node = TestTreeFile.loadTestDataFromExcelFile(inputFile);
+    		System.out.println("Outside Load "+node.getTitle()+node.getChildCount());
+    		//Thread.sleep(1000);
+    		//presentTestTree(node,false);
+			createTestTree(TestTreeFile.loadTestDataFromExcelFile(inputFile));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		getCurrentTestTree().updateUI();
     }
     
     private void replayNavigate(TestNode currentNode)

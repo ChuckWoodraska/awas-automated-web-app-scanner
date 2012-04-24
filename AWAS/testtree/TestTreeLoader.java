@@ -14,22 +14,25 @@ class TestTreeLoader implements Runnable {
 	
 	private ProgressDialog progressDialog;
 	private JTree tree;
+	private TestNode node;
 	private File testDataFile;
 	private File midFile;
 	private Sheet sheet;
 	
-	TestTreeLoader(ProgressDialog progressDialog, JTree tree, File testDataFile, Sheet sheet) {
+	TestTreeLoader(ProgressDialog progressDialog, File testDataFile, Sheet sheet) {
 		this.progressDialog = progressDialog;
-		this.tree = tree;
+		//this.node = node;
 		this.testDataFile = testDataFile;
 		this.sheet = sheet;
 	}
 	
 	public void run ()  {
 		try {
-			//tree.setProgressDialog(progressDialog);
-			TestTreeFile.loadAllNodes(progressDialog, tree, sheet);
-			progressDialog.dispose();
+			
+			node = TestTreeFile.loadAllNodes(progressDialog, sheet);
+			
+			//progressDialog.dispose();
+			System.out.println(node.getChildCount()+" Number of children getnode");
 		}
 		catch (CancellationException e){
 			handleException();
@@ -41,5 +44,10 @@ class TestTreeLoader implements Runnable {
 	
 	private void handleException(){
 		progressDialog.dispose();
+	}
+	
+	public TestNode getNode()
+	{
+		return node;
 	}
 }

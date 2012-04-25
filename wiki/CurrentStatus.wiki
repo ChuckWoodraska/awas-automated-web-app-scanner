@@ -11,12 +11,12 @@ Reminder: This project requires the Java Selenium WebDriver package.
 
 Last Updates:
 
-- Test Oracle
+- Partial Save/Load
 
 Next Updates should include:
 
--Replay functionality to note differences
+-Finish Save/Load
 
--Serialization
+-Replay bugs
 
 -Find elements both through id and name attributes

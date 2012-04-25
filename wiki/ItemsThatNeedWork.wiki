@@ -8,10 +8,17 @@ Still working on these things
 = Details =
 
 Icon for links vs forms
+
 File upload fix
+
 Too many nodes
+
 Look at replaying multiple depth
+
 Look at pointerToFirstButton issue
-*Magento
-*Google
+
+-Magento
+
+-Google
+
 Id or name for inputs (just do name attribute right now)

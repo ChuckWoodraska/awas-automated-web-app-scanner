@@ -50,8 +50,6 @@ public class UserInputReader {
 				if(tempInputType.equals(InputDataType.KEYWORD_TEXT) || tempInputType.equals(InputDataType.KEYWORD_TEXTAREA) || tempInputType.equals(InputDataType.KEYWORD_PASSWORD))
 				{	
 					String tempInputID = ((WebElement) formInputElement).getAttribute(AutoFormNavigator.KEYWORD_NAME);
-					//ArrayList<String> userInputData = new ArrayList<String>();
-					//ArrayList<String> userInputData2 = new ArrayList<String>();
 					UserInput input = new UserInput(tempInputID, InputDataType.getFormInputType(tempInputType), new ArrayList<String>());	
 					UserInput input2 = new UserInput(tempInputID, InputDataType.getFormInputType(tempInputType), new ArrayList<String>());	
 					userInput.add(input);

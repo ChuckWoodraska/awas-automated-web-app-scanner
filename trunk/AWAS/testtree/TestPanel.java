@@ -128,22 +128,18 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	    for (WebElement element: driver.findElements(By.tagName("a"))){
 	    	
 	     	String hrefAttributeString = element.getAttribute("href");
-	     	 System.out.println("After href"+count);
 	    	if (isHyperLink(hrefAttributeString)){
 	    	    String existingLink = (String)links.get(hrefAttributeString);
-	    	    System.out.println("if");
 
 	    	    if (existingLink==null || !existingLink.equalsIgnoreCase(hrefAttributeString)){
 	    	        currentRootNode.add(new TestNode(element.getText(), hrefAttributeString, parentID+index, false));
 	    	        index++;
 	    	        links.put(hrefAttributeString, hrefAttributeString);
-	    		    System.out.println("2nd if");
 
 	    	    }
 	    	}	
 	    	count++;
 	    }
-	    System.out.println("Where are we");
 
 	}
 	

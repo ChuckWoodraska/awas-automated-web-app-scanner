@@ -169,6 +169,8 @@ public class AutoFormNavigator  {
 		ArrayList<WebElement> formRadioButtons = new ArrayList<WebElement>();
 		ArrayList<SelectmultipleGroup> formSelectmultipleInputs = new ArrayList<SelectmultipleGroup>();
         List<WebElement> allFormInputs = form.findElements(By.tagName(KEYWORD_INPUT));
+        
+       // System.out.println(allFormInputs);
         int comboInputsCount = 0;
         
         
@@ -181,7 +183,7 @@ public class AutoFormNavigator  {
         		formRadioButtons.add(0,input);
         		allFormInputs.remove(i);
         	}
-        	else if(input.getAttribute(KEYWORD_TYPE).contentEquals(InputDataType.KEYWORD_HIDDEN) || input.getAttribute(KEYWORD_NAME).contentEquals(""))
+        	else if(input.getAttribute(KEYWORD_TYPE).contentEquals(InputDataType.KEYWORD_HIDDEN))
         	{
         		allFormInputs.remove(i);
         	}
@@ -238,7 +240,6 @@ public class AutoFormNavigator  {
         	formInputs.add(userInputCombos.getDataInputs().get(0));
 
         pointerToFirstButton = pointerToFirstButton + radioButtonGroups.size() + formSelectmultipleInputs.size() + comboInputsCount;
-
        
      
         formInputs.addAll(allFormInputs);
@@ -289,6 +290,13 @@ public class AutoFormNavigator  {
         if(head != pointerToFirstButton)
         {
         	pointerToFirstButton = head-1;
+        }
+        
+        // NEED TO COMPENSATE FOR NO BUTTONS BEING IN THE LIST YET
+        WebElement buttonCheck = formInputs.get(pointerToFirstButton);
+        if(!isButton(buttonCheck))
+        {
+        	++pointerToFirstButton;
         }
         
 
@@ -378,7 +386,7 @@ public class AutoFormNavigator  {
 				for(int btnIndex = pointerToFirstButton; btnIndex<formInputs.size(); ++btnIndex )
 				{
 					driver2.get(url);
-					WebElement element;
+					WebElement element = null;
 					if(formInputElement instanceof RadioGroup)
 					{
 						WebElement oldElement = ((RadioGroup)formInputElement).getRadioButtonAt(index);
@@ -411,7 +419,17 @@ public class AutoFormNavigator  {
 					}
 					else if(formInputElement instanceof WebElement)
 					{
-						element = driver2.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+						try {
+							element = driver2.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+			    		}
+			    		catch (Exception e1) {
+			    			try {
+								element = driver2.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_ID)));
+				    		}
+				    		catch (Exception e2) {
+				    			
+				    		}
+			    		}
 						executeFormInput(element, index, driver2);
 						
 						InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
@@ -789,7 +807,18 @@ public class AutoFormNavigator  {
 			Object formInputElement = formInputs.get(index);
 			if(formInputElement instanceof WebElement)
 			{
-				formInputNames[index] = ((WebElement) formInputElement).getAttribute(KEYWORD_NAME);
+				try {
+					formInputNames[index] = ((WebElement) formInputElement).getAttribute(KEYWORD_NAME);
+	    		}
+	    		catch (Exception e1) {
+	    			try {
+	    				formInputNames[index] = ((WebElement) formInputElement).getAttribute(KEYWORD_ID);
+		    		}
+		    		catch (Exception e2) {
+		    			
+		    		}
+	    		}
+				
 			}
 			else if(formInputElement instanceof ComboInput)
 			{
@@ -1170,6 +1199,7 @@ public class AutoFormNavigator  {
     		System.out.println("Error at Submit in elementClick");
     	}
     	String URL2 = currentDriver.getCurrentUrl();
+    	
 //    	Alert alert = currentDriver.switchTo().alert();
 //    	if (alert!=null){
 //    		try {

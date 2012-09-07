@@ -14,11 +14,3 @@ File upload fix
 Too many nodes
 
 Look at replaying multiple depth
-
-Look at pointerToFirstButton issue
-
--Magento
-
--Google
-
-Id or name for inputs (just do name attribute right now)

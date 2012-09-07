@@ -11,12 +11,12 @@ Reminder: This project requires the Java Selenium WebDriver package. See Librari
 
 Last Updates:
 
-- Partial Save/Load
+- Find elements both through id and name attributes
+
+- Fixed issue with pointerToFirstButton
 
 Next Updates should include:
 
 -Finish Save/Load
 
 -Replay bugs
-
--Find elements both through id and name attributes

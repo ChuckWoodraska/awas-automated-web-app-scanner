@@ -11,12 +11,12 @@ Reminder: This project requires the Java Selenium WebDriver package. See Librari
 
 Last Updates:
 
-- Find elements both through id and name attributes
-
-- Fixed issue with pointerToFirstButton
+- Session Stack to handle sessions
 
 Next Updates should include:
 
 -Finish Save/Load
 
--Replay bugs
+-Fix replay to work with sessions
+
+-Cleanup of webdrivers

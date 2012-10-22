@@ -3,7 +3,7 @@ package testtree;
 public class TestCommands {
 	public static final String NAVIGATE_COMMAND = "NAVIGATE_COMMAND";
 	public static final String NAVIGATE_NEWTAB_COMMAND = "NAVIGATE_NEWTAB_COMMAND";
-	public static final String REPLAYDF_COMMAND = "REPLAYDF_COMMAND";
+	public static final String REPLAY_DEPTH_FIRST_COMMAND = "REPLAYDF_COMMAND";
 	public static final String NEW_SUBTREE_COMMAND = "NEW_SUBTREE_COMMAND";
     public static final String CLOSE_SUBTREE_COMMAND = "CLOSE_SUBTREE_COMMAND";
     public static final String VIEW_HISTORY_COMMAND = "VIEW_HISTORY_COMMAND";
@@ -18,5 +18,6 @@ public class TestCommands {
     public static final String PREFERENCES_COMMAND = "PREFERENCES_COMMAND";
     
     public static final String EDIT_TABLE_COMMAND = "EDIT_TABLE_COMMAND";
+	public static final String MARK_SESSION_START_COMMAND = "MARK_SESSION_START_COMMAND";
 
 }

@@ -131,7 +131,7 @@ public class TestTreeFile {
 		numberOfChildrenCell.setCellValue(numberOfChildren);
 
 		Cell isFormCell = currentRow.createCell(4);
-		isFormCell.setCellValue(node.isForm.toString());
+		isFormCell.setCellValue(node.isForm().toString());
 
 		Cell markingCell = currentRow.createCell(5);
 		//Marking marking = node.getMarking();

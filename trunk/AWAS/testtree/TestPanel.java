@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Stack;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -44,6 +45,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
@@ -55,6 +57,10 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
  	
     protected Hashtable links = new MyHashTable();
     private WebDriver driver = new MyFirefoxDriver();
+    private WebDriver scanDriver = new MyFirefoxDriver();       
+    private WebDriver executeDriver = new MyFirefoxDriver(); 
+    
+    private boolean sessionDriver = false;
 
 // 	private static int MAX_LINKS_PER_PAGE = 20;
 
@@ -98,27 +104,44 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 		public void run () {
 	    	System.out.println("URL: "+urlString);
 	    	testPanelInterface.updateUrlField(urlString);
-	    	try {
-		        driver.get(urlString);
-/*		        for (WebElement element:       driver.findElements(By.tagName("a"))){
-		        	System.out.println("text: "+element.getText());
-		        	System.out.println("id: "+element.getAttribute("id"));
-		        	System.out.println("class: "+element.getAttribute("class"));
-		        	System.out.println("href: "+element.getAttribute("href"));
-		        }	       
-*/		         
-	    	    TestNode currentRootNode = testNode==null? new TestNode(driver.getTitle()): testNode;
-	    	    String parentID = testNode==null? "": testNode.getID()+".";
-	    	    
-	    	    navigateHyperLinks(currentRootNode, parentID);
-	    	    navigateForms(currentRootNode, parentID);
-	    	    presentTestTree(currentRootNode, testNode==null || newTab);
-	    	    
-	    	} catch (Exception ex){
-		    	System.out.println(ex.toString());
-	    	}
-			progressDialog.dispose();
-		}
+	    	if(sessionDriver)
+	    	{
+      
+	    		try {
+		    	    TestNode currentRootNode = testNode==null? new TestNode(executeDriver.getTitle()): testNode;
+		    	    String parentID = testNode==null? "": testNode.getID()+".";
+		    	    
+		    	    navigateSessionHyperLinks(currentRootNode, parentID);
+		    	    navigateSessionForms(currentRootNode, parentID);
+		    	    presentTestTree(currentRootNode, testNode==null || newTab);
+	    		} catch (Exception ex){
+	    			System.out.println(ex.toString());
+	    		}
+				progressDialog.dispose();
+			}
+	    	else{
+			    	try {
+				        driver.get(urlString);
+		/*		        for (WebElement element:       driver.findElements(By.tagName("a"))){
+				        	System.out.println("text: "+element.getText());
+				        	System.out.println("id: "+element.getAttribute("id"));
+				        	System.out.println("class: "+element.getAttribute("class"));
+				        	System.out.println("href: "+element.getAttribute("href"));
+				        }	       
+		*/		         
+			    	    TestNode currentRootNode = testNode==null? new TestNode(driver.getTitle()): testNode;
+			    	    String parentID = testNode==null? "": testNode.getID()+".";
+			    	    
+			    	    navigateHyperLinks(currentRootNode, parentID);
+			    	    navigateForms(currentRootNode, parentID);
+			    	    presentTestTree(currentRootNode, testNode==null || newTab);
+			    	    
+			    	} catch (Exception ex){
+				    	System.out.println(ex.toString());
+			    	}
+					progressDialog.dispose();
+				}
+				}
 	}
 
 	private void navigateHyperLinks(TestNode currentRootNode, String parentID){
@@ -126,11 +149,10 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	    int count = 0;
 	    System.out.println("Number of anchors: "+driver.findElements(By.tagName("a")).size());
 	    for (WebElement element: driver.findElements(By.tagName("a"))){
-	    	
 	     	String hrefAttributeString = element.getAttribute("href");
 	    	if (isHyperLink(hrefAttributeString)){
 	    	    String existingLink = (String)links.get(hrefAttributeString);
-
+	    	    System.out.println(existingLink);
 	    	    if (existingLink==null || !existingLink.equalsIgnoreCase(hrefAttributeString)){
 	    	        currentRootNode.add(new TestNode(element.getText(), hrefAttributeString, parentID+index, false));
 	    	        index++;
@@ -148,6 +170,37 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	    System.out.println("Number of forms: "+driver.findElements(By.tagName("form")).size());
 	    for (WebElement element: driver.findElements(By.tagName("form"))){
 	    	        currentRootNode.add(new TestNode(driver.getTitle(), driver.getCurrentUrl(), index+" "+element.getAttribute("id"), element.getAttribute("id"), true));
+	    	        index++;
+
+	    }
+	}
+	
+	private void navigateSessionHyperLinks(TestNode currentRootNode, String parentID){
+	    int index = currentRootNode.getChildCount()+1;
+	    int count = 0;
+	    System.out.println("Number of anchors: "+executeDriver.findElements(By.tagName("a")).size());
+	    for (WebElement element: executeDriver.findElements(By.tagName("a"))){
+	     	String hrefAttributeString = element.getAttribute("href");
+	    	if (isHyperLink(hrefAttributeString)){
+	    	    String existingLink = (String)links.get(hrefAttributeString);
+	    	    System.out.println(existingLink);
+	    	    if (existingLink==null || !existingLink.equalsIgnoreCase(hrefAttributeString)){
+	    	        currentRootNode.add(new TestNode(element.getText(), hrefAttributeString, parentID+index, false));
+	    	        index++;
+	    	        links.put(hrefAttributeString, hrefAttributeString);
+
+	    	    }
+	    	}	
+	    	count++;
+	    }
+
+	}
+	
+	private void navigateSessionForms(TestNode currentRootNode, String parentID){
+	    int index = currentRootNode.getChildCount()+1;
+	    System.out.println("Number of forms: "+executeDriver.findElements(By.tagName("form")).size());
+	    for (WebElement element: executeDriver.findElements(By.tagName("form"))){
+	    	        currentRootNode.add(new TestNode(executeDriver.getTitle(), executeDriver.getCurrentUrl(), index+" "+element.getAttribute("id"), element.getAttribute("id"), true));
 	    	        index++;
 
 	    }
@@ -412,11 +465,23 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     // start popup menu        
     protected JPopupMenu popupMenu; 
     protected JMenuItem nevigateItem, nevigateNewTabItem, editTableItem, newSubTreeItem, closeSubTreeItem, viewHistoryItem, 
-    deleteNodeItem, addNodeItem, clearTreeItem,  replayDFItem,
-    expandPathsItem, collapsePathsItem;
+    deleteNodeItem, addNodeItem, clearTreeItem,  replayDepthFirstItem, markSessionStartItem, expandPathsItem, collapsePathsItem;
+    
+   // protected JCheckBoxMenuItem markSessionStartItem;
+    
 
     private JMenuItem createPopupMenuItem(String title, String command){
     	JMenuItem menuItem = popupMenu.add(title);
+    	menuItem.setActionCommand(command);
+    	menuItem.addActionListener(this);
+    	return menuItem;
+    }
+    
+    private JMenuItem createPopupCheckBoxMenuItem(String title, String command){
+    	JCheckBoxMenuItem checkBoxMenuItem = new JCheckBoxMenuItem("Mark Start of Session");
+    	checkBoxMenuItem.setState(false);
+    	JMenuItem menuItem = checkBoxMenuItem;
+    	menuItem = popupMenu.add(title);
     	menuItem.setActionCommand(command);
     	menuItem.addActionListener(this);
     	return menuItem;
@@ -426,8 +491,8 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     	popupMenu = new JPopupMenu();
     	nevigateItem = createPopupMenuItem("Navigate", TestCommands.NAVIGATE_COMMAND);
     	nevigateNewTabItem = createPopupMenuItem("Navigate in New Tab", TestCommands.NAVIGATE_NEWTAB_COMMAND);
-    	replayDFItem = createPopupMenuItem("Replay Depth First", TestCommands.REPLAYDF_COMMAND);
-		editTableItem = createPopupMenuItem("Edit Table Data", TestCommands.EDIT_TABLE_COMMAND);
+    	replayDepthFirstItem = createPopupMenuItem("Replay Depth First", TestCommands.REPLAY_DEPTH_FIRST_COMMAND);
+    	editTableItem = createPopupMenuItem("Edit Table Data", TestCommands.EDIT_TABLE_COMMAND);
     	newSubTreeItem = createPopupMenuItem("New Subtree Tab", TestCommands.NEW_SUBTREE_COMMAND);
     	closeSubTreeItem = createPopupMenuItem("Close All Subtree Tabs", TestCommands.CLOSE_SUBTREE_COMMAND);
     	viewHistoryItem = createPopupMenuItem("View History", TestCommands.VIEW_HISTORY_COMMAND);
@@ -437,6 +502,25 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     	popupMenu.addSeparator();
     	addNodeItem = createPopupMenuItem("Add Node...", TestCommands.ADD_NODE_COMMAND);
     	deleteNodeItem = createPopupMenuItem("Delete Node", TestCommands.DELETE_NODE_COMMAND);
+    	popupMenu.addSeparator();
+    	JMenuItem checkBoxMenuItem = new JCheckBoxMenuItem("Mark Start of Session");
+    	checkBoxMenuItem.addActionListener(new ActionListener() {
+    	      public void actionPerformed(ActionEvent event) {
+    	    	  TestNode currentNode = getSelectedTestNode();
+    	    	  if(currentNode.isSessionStart == true)
+    	    	  {
+    	    		  currentNode.isSessionStart = false;
+    	    		  System.out.println("FALSE");
+    	    	  }
+    	    	  else
+    	    	  {
+    	    		  currentNode.isSessionStart = true;
+    	    		  System.out.println("TRUE");
+    	    	  }
+    	    	  
+    	      }
+    	    });
+    	popupMenu.add(checkBoxMenuItem);
     }
 
     public TestNode getSelectedTestNode(){
@@ -444,11 +528,10 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
         TreePath parentPath = currentTestTree.getSelectionPath();
         return (parentPath == null)? null: (TestNode)parentPath.getLastPathComponent();
     }
-    public Stack stack = new Stack();//navigate(rootNode, rootNode.getURL() ,false );
+    public Stack replayStack = new Stack();
     public void replayDepthFirst(TestNode currentNode)
     {
     	TestNode rootNode = currentNode;
-    	//Stack stack = new Stack();//navigate(rootNode, rootNode.getURL() ,false );
     	if(rootNode.getChildCount() > 0 || rootNode.recordedInputs.size() > 0)
     	{
     		int size = 1;
@@ -469,14 +552,14 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     			if(childNode.getChildCount() > 0 || childNode.recordedInputs.size() > 0)
     			{
     				
-    				stack.push(childNode);    				
+    				replayStack.push(childNode);    				
     				//System.out.println(childNode.toString());
     				replayDepthFirst(childNode);
-    				for(int j = 0; j < stack.size(); ++j)
+    				for(int j = 0; j < replayStack.size(); ++j)
     				{
-    					System.out.println(stack.get(j));
+    					System.out.println(replayStack.get(j));
     				}
-    				TestNode temp = (TestNode) stack.pop();
+    				TestNode temp = (TestNode) replayStack.pop();
     				//System.out.println(temp.getFullNodeInfo());
     				
     				
@@ -487,6 +570,81 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     		}
     		    		
     	}
+    }
+    private TestNode originalNode;
+    private TestNode sessionNode;
+    public Stack sessionStack = new Stack();
+    public void setupSession(TestNode currentNode)
+    {
+    	//Stack stack = new Stack();  
+    	if(currentNode.isSessionStart == false && currentNode.getParent() == null)
+    	{
+    		sessionDriver = false;
+    		if(originalNode.isForm())
+    		{
+    			setupFormNode(originalNode);
+    		}
+    		else
+    		{
+    			navigate(originalNode, originalNode.getURL(), false);
+    		}    		
+    		sessionStack.clear();
+ 
+    	}
+    	else if(currentNode.isSessionStart == true)
+    	{
+    		sessionDriver = true;
+    			
+    			// Start navigation
+    			TestNode childNode = (TestNode) sessionStack.pop();
+    			sessionNode = currentNode;
+    			sessionNode.recordedInputs.clear();
+    			//if(!childNode.recordedInputs.isEmpty())
+    				
+    			setupFormNode(sessionNode);
+    			
+    			while(childNode != originalNode)
+    			{
+    				
+    				if(childNode.isForm())
+    				{
+    					setupFormNode(sessionNode);
+    				}
+    				else
+    				{
+    				}
+    				
+    				childNode = (TestNode) sessionStack.pop();
+    				sessionNode = childNode;
+        			sessionNode.recordedInputs.clear();
+        			//if(!childNode.recordedInputs.isEmpty())
+        			//for(Cookie cookie: executeDriver.manage().getCookies())
+        			//{
+        				//scanDriver.manage().addCookie(cookie);
+        			//}
+        				
+    			}
+    			if(childNode.isForm())
+        		{
+        			setupFormNode(childNode);
+        		}
+        		else
+        		{
+        			
+        			navigate(childNode, executeDriver.getCurrentUrl(), false);
+        		}
+        		sessionStack.clear();
+    		    		
+    	}
+    	else if(currentNode.getParent() != null)
+    	{
+   
+    			sessionStack.push(currentNode); 
+    			TestNode temp = (TestNode) currentNode.getParent();
+    			setupSession(temp);
+    		    		
+    	}
+    	
     }
     
     public void saveTree(){
@@ -521,7 +679,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     	
     	driver.get(currentNode.getURL());
     	//currentNode.removeAllChildren();
-		if(currentNode.isForm)
+		if(currentNode.isForm())
 		{
 			System.out.println("Start Form");
 		}
@@ -576,59 +734,84 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 		    getCurrentTestTree().updateUI();
     }
     
+    private void setupFormNode(TestNode currentNode)
+    {
+    	currentNode.convertVectorsToInput(currentNode);
+		AutoFormNavigator afi = new AutoFormNavigator(currentNode.getCombinationalInput(),currentNode.getUserInput(),currentNode.getUserInputInvalid(), currentNode.getValidTestOracle(),currentNode.getInvalidTestOracle());
+		afi.navigateForm(currentNode.getURL(), currentNode.getFormName(), scanDriver, executeDriver);
+		int index = 1;
+	    for (TestNode node : afi.testNodes){
+	    	node.setId(index);
+	        currentNode.add(node);
+	        //navigate each node
+	        ++index;
+	    }
+    }
+    
+    private void setupFormNodeSession(TestNode currentNode)
+    {
+    	currentNode.convertVectorsToInput(currentNode);
+		AutoFormNavigator afi = new AutoFormNavigator(currentNode.getCombinationalInput(),currentNode.getUserInput(),currentNode.getUserInputInvalid(), currentNode.getValidTestOracle(),currentNode.getInvalidTestOracle());
+		afi.navigateForm(currentNode.getURL(), currentNode.getFormName(), scanDriver, executeDriver);
+		int index = 1;
+	    for (TestNode node : afi.testNodes){
+	    	node.setId(index);
+	        currentNode.add(node);
+	        //navigate each node
+	        ++index;
+	    }
+    }
+    
     @Override
 	public void actionPerformed(ActionEvent e) {
     	String command = e.getActionCommand();
     	if (command == TestCommands.NAVIGATE_COMMAND || command == TestCommands.NAVIGATE_NEWTAB_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();
     		currentNode.removeAllChildren();
+    		scanDriver = new MyFirefoxDriver();       
+    	    executeDriver = new MyFirefoxDriver();    
+    	    
     		if(currentNode.isForm())
     		{
-    			currentNode.convertVectorsToInput(currentNode);
-    			AutoFormNavigator afi = new AutoFormNavigator(currentNode.getCombinationalInput(),currentNode.getUserInput(),currentNode.getUserInputInvalid(), currentNode.getValidTestOracle(),currentNode.getInvalidTestOracle());
-    			afi.navigatePage(currentNode.getURL());
-    			int index = 1;
-    		    for (TestNode node : afi.testNodes){
-    		    	node.setId(index);
-	    	        currentNode.add(node);
-	    	        //navigate each node
-	    	        ++index;
-    		    }
-    		    
-
-    		    getCurrentTestTree().updateUI();
-    		    
-    		   
+    			originalNode = currentNode;
+    			setupSession(currentNode);
+    		    getCurrentTestTree().updateUI();   
     		}
     		else
     		{    			    		
 	            if (currentNode!=null){
 	            	boolean newTab = (command == TestCommands.NAVIGATE_NEWTAB_COMMAND);
-	            	navigate(currentNode, currentNode.getURL(), newTab);
+	            	originalNode = currentNode;
+	    			setupSession(currentNode);	
 	            }
     		}
+    	
+    		//scanDriver.close();
+    		//executeDriver.close();
     	} else if (command == TestCommands.EDIT_TABLE_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();
     		String formName = currentNode.getFormName();
     		String url = currentNode.getURL();
-    		if(currentNode.noTable)
+    		if(currentNode.hasTable())
     		{
     			System.out.println(currentNode.getTitle());
-	    		//String xlsPath = "C:\\Users\\Chuck\\Desktop\\job\\Google.xls";
 	    		String xlsPath = "C:\\Users\\Chuck\\Desktop\\job\\AutoNav\\"+currentNode.getTitle()+".xls";
-	    		UserInputReader reader = new UserInputReader(xlsPath, 0);
+	    		UserInputReader reader = new UserInputReader(xlsPath, 0, scanDriver);
 	    		reader.readFromExcel(formName, url);
 	    		currentNode.setUserInput(reader.getUserInput());
 	    		currentNode.setUserInputInvalid(reader.getUserInputInvalid());
 	    		currentNode.userInputCombos = reader.getCombinationalInput();
 	    		currentNode.convertInputToVectors();
-	    		currentNode.noTable = false;
+	    		currentNode.setTable(false);
     		}
     		UserInputGUI showTable = new UserInputGUI(currentNode);
     		showTable.showUserInput();
-    	} else if (command == TestCommands.REPLAYDF_COMMAND) { 
+    	} else if (command == TestCommands.REPLAY_DEPTH_FIRST_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();
             replayDepthFirst(currentNode);
+    	} else if (command == TestCommands.MARK_SESSION_START_COMMAND) { 
+    		TestNode currentNode = getSelectedTestNode();
+    		
     	} else if (command == TestCommands.NEW_SUBTREE_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();
             if (currentNode!=null && currentNode.getChildCount()>0)

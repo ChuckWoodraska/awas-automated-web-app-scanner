@@ -30,18 +30,24 @@ public class UserInputReader {
 	private String path;
 	private int formIndex;
 	
-	public UserInputReader(String path, int formIndex){
+	private WebDriver scanDriver;
+	
+	public UserInputReader(String path, int formIndex, WebDriver scanDriver){
 		this.path = path;
 		this.formIndex = formIndex;	
+		this.scanDriver = scanDriver;
 	}
 		
 	public void readFromForm(String formName, String url)
 	{
-		WebDriver driver = new MyFirefoxDriver(); 
-		driver.get(url);
-		WebElement form = driver.findElement(By.id(formName));
+		
+		scanDriver.get(url);
+		WebElement form = scanDriver.findElement(By.id(formName));
 		AutoFormNavigator afi = new AutoFormNavigator(userInputCombos, userInput, userInputInvalid, validTestOracle, invalidTestOracle);
 		List<Object> inputs = afi.collectAllFormInputElements(form);
+		
+		
+		
 		for(int index=0; index<afi.pointerToFirstButton; index++){
 			Object formInputElement = inputs.get(index);
 			if(formInputElement instanceof WebElement)
@@ -50,15 +56,15 @@ public class UserInputReader {
 				if(tempInputType.equals(InputDataType.KEYWORD_TEXT) || tempInputType.equals(InputDataType.KEYWORD_TEXTAREA) || tempInputType.equals(InputDataType.KEYWORD_PASSWORD))
 				{	
 					String tempInputID = ((WebElement) formInputElement).getAttribute(AutoFormNavigator.KEYWORD_NAME);
-					UserInput input = new UserInput(tempInputID, InputDataType.getFormInputType(tempInputType), new ArrayList<String>());	
-					UserInput input2 = new UserInput(tempInputID, InputDataType.getFormInputType(tempInputType), new ArrayList<String>());	
-					userInput.add(input);
-					userInputInvalid.add(input2);
+					UserInput validIDs = new UserInput(tempInputID, InputDataType.getFormInputType(tempInputType), new ArrayList<String>());	
+					UserInput invalidIDs = new UserInput(tempInputID, InputDataType.getFormInputType(tempInputType), new ArrayList<String>());	
+					userInput.add(validIDs);
+					userInputInvalid.add(invalidIDs);
 				}
 			}
 		
 		}
-		driver.close();
+		scanDriver.close();
 	}
 	
   @SuppressWarnings("deprecation")

@@ -22,8 +22,9 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	private String id;	
 	private String formName;
 	private FormGroup formRecords;
-	public Boolean noTable = true;
-	public Boolean isForm = false;
+	private Boolean noTable = true;
+	private Boolean isForm = false;
+	public Boolean isSessionStart = false;
 	public ArrayList<FormRecord> recordedInputs = new ArrayList<FormRecord>();
 	
 	public CombinationalInputs userInputCombos = new CombinationalInputs(new ArrayList<ComboInput>());
@@ -121,6 +122,16 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	public Boolean isForm()
 	{
 		return isForm;
+	}
+	
+	public Boolean hasTable()
+	{
+		return noTable;
+	}
+	
+	public void setTable(Boolean tableSet)
+	{
+		noTable = tableSet;
 	}
 	
 	public String getFullNodeInfo(){

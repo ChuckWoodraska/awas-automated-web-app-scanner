@@ -74,8 +74,8 @@ public class AutoFormNavigator  {
 
 	// BROWSER SETUP
 	private FirefoxProfile firefoxProfile = new FirefoxProfile();	
-	private WebDriver driver;     
-    private WebDriver driver2;   
+	private WebDriver scanDriver;     
+    private WebDriver executeDriver;   
     
     private void getpastWebGoat(WebDriver currentDriver)
     {
@@ -107,38 +107,44 @@ public class AutoFormNavigator  {
     private void setupFirefoxProfile()
     {
     	firefoxProfile.setPreference("network.http.phishy-userpass-length", 255); // So we can do username password in URL for Basic Authentication
-    	driver = new FirefoxDriver(firefoxProfile);   
-    	driver2 = new FirefoxDriver(firefoxProfile); 
+    	scanDriver = new FirefoxDriver(firefoxProfile);   
+    	executeDriver = new FirefoxDriver(firefoxProfile); 
     }
     
     public void navigatePage(String url) {
     	//setupFirefoxProfile();
-    	driver = new MyFirefoxDriver();     
-        driver2 = new MyFirefoxDriver();   
-        driver.get(url);
+    	scanDriver = new MyFirefoxDriver();     
+        executeDriver = new MyFirefoxDriver();   
+        scanDriver.get(url);
 
         // COMMENT OUT IF NOT USING WEBGOAT
        // url = "http://localhost/WebGoat/attack";
        // getpastWebGoat(driver);
         
         
-        List<WebElement> allForms = driver.findElements(By.tagName(KEYWORD_FORM));
+        List<WebElement> allForms = scanDriver.findElements(By.tagName(KEYWORD_FORM));
         for (WebElement form : allForms){        
         	testCount = 0;        	        	
         	formID = form.getAttribute(KEYWORD_ID);
-        	navigateForm(driver.getCurrentUrl(), form);
+        	//navigateForm(driver.getCurrentUrl(), form);
         	        	
         	++formIndex; 
         	System.out.println("Total Tests: "+ testCount);
 
         }
         
-        driver.close();
-        driver2.close();
+      //  driver.close();
+      //  driver2.close();
         
     }       
     
-	private void navigateForm(String url, WebElement form){
+	public void navigateForm(String url, String formName, WebDriver sDriver, WebDriver eDriver){
+		  
+		scanDriver = sDriver;
+		executeDriver = eDriver;
+        scanDriver.get(url);
+        WebElement form = scanDriver.findElement(By.id(formName));
+        
 		System.out.println("Form: "+form.getAttribute(KEYWORD_ID));			
 		List<Object> formInputs = collectAllFormInputElements(form);
 		
@@ -293,18 +299,21 @@ public class AutoFormNavigator  {
         }
         
         // NEED TO COMPENSATE FOR NO BUTTONS BEING IN THE LIST YET
-        WebElement buttonCheck = formInputs.get(pointerToFirstButton);
-        if(!isButton(buttonCheck))
+        if(formInputs.size() > 0)
         {
-        	++pointerToFirstButton;
+	        WebElement buttonCheck = formInputs.get(pointerToFirstButton);
+	        if(!isButton(buttonCheck))
+	        {
+	        	++pointerToFirstButton;
+	        }
         }
         
 
-//        System.out.println("After swapping, ArrayList contains :");
-//        for(WebElement input : formInputs)
-//        {
-//        	 System.out.println(input.getAttribute(KEYWORD_NAME)+" "+input.getAttribute(KEYWORD_TYPE));
-//        }
+        System.out.println("After swapping, ArrayList contains :");
+        for(WebElement input : formInputs)
+        {
+        	 System.out.println(input.getAttribute(KEYWORD_NAME)+" "+input.getAttribute(KEYWORD_TYPE));
+        }
         
 	}
 	
@@ -376,7 +385,7 @@ public class AutoFormNavigator  {
 	{
 		
 		// FILL IN FORM
-		driver2.get(url);
+		executeDriver.get(url);
 		Object formInputElement = formInputs.get(0);
 		int choices = getFormInputChoices(formInputs.get(0));
 		for(int index = 0; index < choices; ++index)
@@ -385,12 +394,12 @@ public class AutoFormNavigator  {
 			{
 				for(int btnIndex = pointerToFirstButton; btnIndex<formInputs.size(); ++btnIndex )
 				{
-					driver2.get(url);
+					executeDriver.get(url);
 					WebElement element = null;
 					if(formInputElement instanceof RadioGroup)
 					{
 						WebElement oldElement = ((RadioGroup)formInputElement).getRadioButtonAt(index);
-						element = driver2.findElement(By.id(oldElement.getAttribute(KEYWORD_ID)));
+						element = executeDriver.findElement(By.id(oldElement.getAttribute(KEYWORD_ID)));
 						element.click();
 						
 						InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
@@ -399,7 +408,7 @@ public class AutoFormNavigator  {
 					}
 					else if(formInputElement instanceof SelectmultipleGroup)
 					{
-						element = driver2.findElement(By.name(((SelectmultipleGroup)formInputElement).getName()));
+						element = executeDriver.findElement(By.name(((SelectmultipleGroup)formInputElement).getName()));
 						Select s = new Select(element);				        	
 			        	List<WebElement> listviewOptions = s.getOptions();
 			        	int[] combos = ((SelectmultipleGroup) formInputElement).getSelectmultipleCombinations(index);
@@ -420,17 +429,17 @@ public class AutoFormNavigator  {
 					else if(formInputElement instanceof WebElement)
 					{
 						try {
-							element = driver2.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+							element = executeDriver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
 			    		}
 			    		catch (Exception e1) {
 			    			try {
-								element = driver2.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_ID)));
+								element = executeDriver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_ID)));
 				    		}
 				    		catch (Exception e2) {
 				    			
 				    		}
 			    		}
-						executeFormInput(element, index, driver2);
+						executeFormInput(element, index, executeDriver);
 						
 						InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
 						formrecord.addDataInput(inputrecord);	
@@ -441,14 +450,19 @@ public class AutoFormNavigator  {
 									
 					// SUBMIT
 					try {
-						elementClick(driver2, driver2.findElement(By.id(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_ID))));					
+						elementClick(executeDriver, executeDriver.findElement(By.id(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_ID))));					
 		    		}
 		    		catch (Exception e) {
 		    			try {
-			    			elementClick(driver2, driver2.findElement(By.name(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_NAME))));
+			    			elementClick(executeDriver, executeDriver.findElement(By.name(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_NAME))));
 			    		}
 			    		catch (Exception e1) {
-	
+			    			try {
+				    			elementClick(executeDriver, executeDriver.findElement(By.className(((WebElement) formInputs.get(btnIndex)).getAttribute("class"))));
+				    		}
+				    		catch (Exception e2) {
+		
+				    		}
 			    		}
 	
 		    		}
@@ -467,12 +481,12 @@ public class AutoFormNavigator  {
 				{
 					for(int btnIndex = pointerToFirstButton; btnIndex<formInputs.size(); ++btnIndex )
 					{
-						driver2.get(url);
+						executeDriver.get(url);
 						WebElement element;
 						if(formInputElement instanceof RadioGroup)
 						{
 							WebElement oldElement = ((RadioGroup)formInputElement).getRadioButtonAt(index);
-							element = driver2.findElement(By.id(oldElement.getAttribute(KEYWORD_ID)));
+							element = executeDriver.findElement(By.id(oldElement.getAttribute(KEYWORD_ID)));
 							element.click();
 							
 							InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
@@ -481,7 +495,7 @@ public class AutoFormNavigator  {
 						}
 						else if(formInputElement instanceof SelectmultipleGroup)
 						{
-							element = driver2.findElement(By.name(((SelectmultipleGroup)formInputElement).getName()));
+							element = executeDriver.findElement(By.name(((SelectmultipleGroup)formInputElement).getName()));
 							Select s = new Select(element);				        	
 				        	List<WebElement> listviewOptions = s.getOptions();
 				        	int[] combos = ((SelectmultipleGroup) formInputElement).getSelectmultipleCombinations(index);
@@ -501,8 +515,8 @@ public class AutoFormNavigator  {
 						}
 						else if(formInputElement instanceof WebElement)
 						{
-							element = driver2.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
-							executeInvalidFormInput(element, index, driver2);
+							element = executeDriver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+							executeInvalidFormInput(element, index, executeDriver);
 							
 							InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
 							formrecord.addDataInput(inputrecord);	
@@ -513,14 +527,19 @@ public class AutoFormNavigator  {
 										
 						// SUBMIT
 						try {
-							elementClick(driver2, driver2.findElement(By.id(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_ID))));					
+							elementClick(executeDriver, executeDriver.findElement(By.id(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_ID))));					
 			    		}
 			    		catch (Exception e) {
 			    			try {
-				    			elementClick(driver2, driver2.findElement(By.name(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_NAME))));
+				    			elementClick(executeDriver, executeDriver.findElement(By.name(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_NAME))));
 				    		}
 				    		catch (Exception e1) {
-		
+				    			try {
+					    			elementClick(executeDriver, executeDriver.findElement(By.className(((WebElement) formInputs.get(btnIndex)).getAttribute("class"))));
+					    		}
+					    		catch (Exception e2) {
+			
+					    		}
 				    		}
 		
 			    		}
@@ -556,7 +575,7 @@ public class AutoFormNavigator  {
 				for(int j=0; j<invalidInput.size(); j++)
 				{
 					try{
-						WebElement element = driver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+						WebElement element = scanDriver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
 					
 						if(formInputNames[j].equals(element.getAttribute(KEYWORD_NAME)))
 						{
@@ -621,7 +640,7 @@ public class AutoFormNavigator  {
 			formrecord = new FormRecord(formIndex, new ArrayList<InputRecord>(), new ArrayList<Integer>(), "");
 			for(int btnIndex = pointerToFirstButton; btnIndex<formInputs.size(); ++btnIndex)
 			{
-				driver2.get(url);
+				executeDriver.get(url);
 				for (int index=0; index<combination.length; index++){
 																				
 					Object formInputElement = formInputs.get(index);
@@ -629,7 +648,7 @@ public class AutoFormNavigator  {
 					if(formInputElement instanceof RadioGroup)
 					{
 						WebElement oldElement = ((RadioGroup)formInputElement).getRadioButtonAt(combination[index]);
-						element = driver2.findElement(By.id(oldElement.getAttribute(KEYWORD_ID)));
+						element = executeDriver.findElement(By.id(oldElement.getAttribute(KEYWORD_ID)));
 						element.click();
 						
 						InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
@@ -638,7 +657,7 @@ public class AutoFormNavigator  {
 					}
 					else if(formInputElement instanceof SelectmultipleGroup)
 					{
-						element = driver2.findElement(By.name(((SelectmultipleGroup)formInputElement).getName()));
+						element = executeDriver.findElement(By.name(((SelectmultipleGroup)formInputElement).getName()));
 						Select s = new Select(element);				        	
 			        	List<WebElement> listviewOptions = s.getOptions();
 			        	int[] combos = ((SelectmultipleGroup) formInputElement).getSelectmultipleCombinations(combination[index]);
@@ -659,8 +678,8 @@ public class AutoFormNavigator  {
 					}
 					else if(formInputElement instanceof WebElement)
 					{
-						element = driver2.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
-						executeFormInput(element, combination[index], driver2);
+						element = executeDriver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+						executeFormInput(element, combination[index], executeDriver);
 						
 						InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
 						formrecord.addDataInput(inputrecord);
@@ -670,8 +689,8 @@ public class AutoFormNavigator  {
 					{
 						for(int i = 0; i < userInputCombos.getDataInputs().get(0).getSize(); ++i)
 						{
-							element = driver2.findElement(By.name(((ComboInput) formInputElement).getInputName().get(i)));
-							executeFormInput(element, combination[index], driver2);
+							element = executeDriver.findElement(By.name(((ComboInput) formInputElement).getInputName().get(i)));
+							executeFormInput(element, combination[index], executeDriver);
 							InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
 							formrecord.addDataInput(inputrecord);
 							formrecord.addDataCombo(combination[index]);
@@ -686,14 +705,19 @@ public class AutoFormNavigator  {
 				
 				//SUBMIT
 				try {
-					elementClick(driver2, driver2.findElement(By.id(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_ID))));					
+					elementClick(executeDriver, executeDriver.findElement(By.id(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_ID))));					
 	    		}
 	    		catch (Exception e) {
 	    			try {
-		    			elementClick(driver2, driver2.findElement(By.name(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_NAME))));
+		    			elementClick(executeDriver, executeDriver.findElement(By.name(((WebElement) formInputs.get(btnIndex)).getAttribute(KEYWORD_NAME))));
 		    		}
 		    		catch (Exception e1) {
-
+		    			try {
+			    			elementClick(executeDriver, executeDriver.findElement(By.className(((WebElement) formInputs.get(btnIndex)).getAttribute("class"))));
+			    		}
+			    		catch (Exception e2) {
+	
+			    		}
 		    		}
 		    		
 		    		
@@ -1198,8 +1222,17 @@ public class AutoFormNavigator  {
     	catch ( StaleElementReferenceException e){
     		System.out.println("Error at Submit in elementClick");
     	}
+    	// WAIT
+		synchronized (currentDriver)
+		{
+		    try {
+				currentDriver.wait(WAIT_TIME);
+			} catch (InterruptedException e) {
+				System.out.println("Error at synchronizing in elementClick");
+			}
+		}
     	String URL2 = currentDriver.getCurrentUrl();
-    	
+    	System.out.println(URL2);
 //    	Alert alert = currentDriver.switchTo().alert();
 //    	if (alert!=null){
 //    		try {
@@ -1221,7 +1254,7 @@ public class AutoFormNavigator  {
     	testNodes.add(node);
     	
     	System.out.println(currentDriver.getCurrentUrl());
-    	signout(currentDriver);
+    	//signout(currentDriver);
   	 }
     
     private WebDriver testOracle(WebDriver currentDriver)

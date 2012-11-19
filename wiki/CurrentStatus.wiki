@@ -17,6 +17,8 @@ Next Updates should include:
 
 -Finish Save/Load
 
+-Placeholder values (?placeholder?)
+
 -Fix replay to work with sessions
 
 -Cleanup of webdrivers

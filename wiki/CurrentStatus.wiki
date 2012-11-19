@@ -17,6 +17,8 @@ Next Updates should include:
 
 -Finish Save/Load
 
+-Fix upward chaining of sessions (should only use data inputs in the path and not replay rest of the nodes)
+
 -Placeholder values (?placeholder?)
 
 -Fix replay to work with sessions

@@ -16,3 +16,7 @@ File upload fix
 Too many nodes
 
 Look at replaying multiple depth
+
+Preferences Menu Item
+-Max number of nodes
+-Max wait time

@@ -9,6 +9,8 @@ Still working on these things
 
 Icon for links vs forms
 
+Page source vs URL (whether to create nodes based on page source and whether this is possible)
+
 File upload fix
 
 Too many nodes

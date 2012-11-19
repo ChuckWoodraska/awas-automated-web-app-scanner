@@ -20,3 +20,5 @@ Look at replaying multiple depth
 Preferences Menu Item
 -Max number of nodes
 -Max wait time
+
+Self Expanding Nodes (nodes that contain same form name or link name and url would self expand using previous user input data)

@@ -1226,13 +1226,13 @@ public class AutoFormNavigator  {
 		synchronized (currentDriver)
 		{
 		    try {
-				currentDriver.wait(WAIT_TIME);
+				currentDriver.wait(1000);
 			} catch (InterruptedException e) {
 				System.out.println("Error at synchronizing in elementClick");
 			}
 		}
     	String URL2 = currentDriver.getCurrentUrl();
-    	System.out.println(URL2);
+    	//System.out.println(URL2);
 //    	Alert alert = currentDriver.switchTo().alert();
 //    	if (alert!=null){
 //    		try {
@@ -1249,7 +1249,14 @@ public class AutoFormNavigator  {
     	//System.out.println("Below testOracle");
     	formGroup = new FormGroup(formIndex, formID, new ArrayList<FormRecord>());
     	formGroup.addFormInput(formrecord);
-    	
+		synchronized (currentDriver)
+		{
+		    try {
+				currentDriver.wait(1000);
+			} catch (InterruptedException e) {
+				System.out.println("Error at synchronizing in elementClick");
+			}
+		}
     	TestNode node = new TestNode(formID , URL2, formIndex+"", formGroup.getFormInputs(), false);
     	testNodes.add(node);
     	

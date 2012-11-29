@@ -3,10 +3,17 @@
 */
 package testtree;
 
+import input.CombinationalInputs;
+import input.ComboInput;
+import input.InputDataType;
+import input.TestOracle;
+import input.UserInput;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.util.concurrent.CancellationException;
@@ -46,22 +53,27 @@ public class TestTreeFile {
 	
 	static private void writeHeader(JTree tree, Sheet sheet){
         Row headerRow = sheet.createRow(rowIndex++);
-        Cell versionCell = headerRow.createCell(0);
+        Cell idHeaderCell = headerRow.createCell(0);
+        idHeaderCell.setCellValue("Node ID");
 
 
-        Cell midCell = headerRow.createCell(1);
-
+        Cell titleHeaderCell = headerRow.createCell(1);
+        titleHeaderCell.setCellValue("Node Title");
         
-        Cell coverageCell = headerRow.createCell(2);
-
+        Cell urlHeaderCell = headerRow.createCell(2);
+        urlHeaderCell.setCellValue("Node URL");
+        
+        Cell childrenHeaderCell = headerRow.createCell(3);
+        childrenHeaderCell.setCellValue("# of Children");
+        
+        Cell isFormHeaderCell = headerRow.createCell(4);
+        isFormHeaderCell.setCellValue("Is Form?");
+        
+        Cell isSessionStartHeaderCell = headerRow.createCell(5);
+        isSessionStartHeaderCell.setCellValue("Is Session Start?");
  
-/*        
-        Cell languageCell = headerRow.createCell(3);
-        languageCell.setCellValue(tree.getSystemOptions().getLanguageIndex());
-
-        Cell testFrameworkCell = headerRow.createCell(4);
-        testFrameworkCell.setCellValue(tree.getSystemOptions().getTestFrameworkIndex());
-*/
+        Cell hasTableHeaderCell = headerRow.createCell(6);
+        hasTableHeaderCell.setCellValue("No Table?");
 	}
 	
 	static private void writeAllNodes(JTree tree, Sheet sheet) throws CancellationException{
@@ -92,23 +104,17 @@ public class TestTreeFile {
         Row currentRow = sheet.createRow(rowIndex++);
         
         Cell nodeNumberCell = currentRow.createCell(0);
-        nodeNumberCell.setCellValue(node.getID());
+        nodeNumberCell.setCellValue("Root");
 
         Cell transitionIndexCell = currentRow.createCell(1);
-       	transitionIndexCell.setCellValue("");
+       	transitionIndexCell.setCellValue(node.getTitle());
 
         Cell subsitutionCell = currentRow.createCell(2);
-		subsitutionCell.setCellValue("");
+		subsitutionCell.setCellValue(node.getURL());
 
 		Cell numberOfChildrenCell = currentRow.createCell(3);
-		int numberOfChildren = node.getChildCount();// node.hasChildren()? node.children().size(): 0; 
+		int numberOfChildren = node.getChildCount();
 		numberOfChildrenCell.setCellValue(numberOfChildren);
-
-		Cell negativeCell = currentRow.createCell(4);
-		negativeCell.setCellValue("");
-
-		Cell markingCell = currentRow.createCell(5);
-		markingCell.setCellValue("");
 
 	}
 	
@@ -133,7 +139,184 @@ public class TestTreeFile {
 		Cell isFormCell = currentRow.createCell(4);
 		isFormCell.setCellValue(node.isForm().toString());
 
-		Cell markingCell = currentRow.createCell(5);
+		Cell isSessionStartCell = currentRow.createCell(5);
+		isSessionStartCell.setCellValue(node.isSessionStart.toString());
+		
+
+		Cell hasTableCell = currentRow.createCell(6);
+		hasTableCell.setCellValue(node.hasTable().toString());
+		
+		Cell formNameCell = currentRow.createCell(7);
+		formNameCell.setCellValue(node.getFormName().toString());
+		
+		int userInputInvalidStart = 0;
+		try{
+			Cell userInput;
+			node.convertVectorsToInput(node);
+			int count = 8; // first 7 cells are there already
+			userInput = currentRow.createCell(count);
+			userInput.setCellValue(node.getUserInput().size());
+			++count;
+			for(int i = 0; i < node.getUserInput().size(); ++i)				
+			{
+				userInput = currentRow.createCell(count);
+				userInput.setCellValue(node.getUserInput().get(i).getUserInputData().size());
+				++count;
+				userInput = currentRow.createCell(count);
+				userInput.setCellValue(node.getUserInput().get(i).getInputID());
+				++count;
+				userInput = currentRow.createCell(count);
+				userInput.setCellValue(node.getUserInput().get(i).getInputType().toString());
+				++count;
+				for(int j = 0; j < node.getUserInput().get(i).getUserInputData().size(); ++j)
+				{
+					userInput = currentRow.createCell(count);
+					userInput.setCellValue(node.getUserInput().get(i).getUserInputData().get(j));
+					count++;
+				}
+			}
+			
+			userInputInvalidStart = count;
+			Cell userInputInvalid;
+			userInputInvalid = currentRow.createCell(userInputInvalidStart);
+			userInputInvalid.setCellValue(node.getUserInputInvalid().size());
+			++userInputInvalidStart;
+			for(int i = 0; i < node.getUserInputInvalid().size(); ++i)
+			{
+				userInputInvalid = currentRow.createCell(userInputInvalidStart);
+				userInputInvalid.setCellValue(node.getUserInputInvalid().get(i).getUserInputData().size());
+				++userInputInvalidStart;
+				userInput = currentRow.createCell(userInputInvalidStart);
+				userInput.setCellValue(node.getUserInputInvalid().get(i).getInputID());
+				++userInputInvalidStart;
+				userInput = currentRow.createCell(userInputInvalidStart);
+				userInput.setCellValue(node.getUserInputInvalid().get(i).getInputType().toString());
+				++userInputInvalidStart;
+				for(int j = 0; j < node.getUserInputInvalid().get(i).getUserInputData().size(); ++j)
+				{
+					userInputInvalid = currentRow.createCell(userInputInvalidStart);
+					userInputInvalid.setCellValue(node.getUserInputInvalid().get(i).getUserInputData().get(j));
+					userInputInvalidStart++;
+				}
+			}
+			
+		
+		}
+		catch(Exception e){
+		}
+		if(userInputInvalidStart != 0)
+		{
+			try{
+				Cell validTestOracle;
+				
+				int count = userInputInvalidStart;
+				System.out.println(count);
+				validTestOracle = currentRow.createCell(count);
+				validTestOracle.setCellValue(node.getValidTestOracle().getTestTypeData().size());
+				++count;
+				
+				
+				//System.out.println(node.getValidTestOracle().getTestData().get());
+				
+				
+				for(int oracleCount = 0; oracleCount < node.getValidTestOracle().getTestTypeData().size(); ++oracleCount)
+				{
+					for(int i = 0; i < 2; ++i)
+					{
+						if(i == 0)
+							{
+								validTestOracle = currentRow.createCell(count);
+								validTestOracle.setCellValue(node.getValidTestOracle().getTestTypeData().get(oracleCount));
+								++count;
+								//System.out.println(count);
+							}
+							else
+							{
+								validTestOracle = currentRow.createCell(count);
+								validTestOracle.setCellValue(node.getValidTestOracle().getTestData().get(oracleCount).length);
+								//System.out.println(node.getValidTestOracle().getTestData().get(i));
+								++count;
+								for(int index = 0; index < node.getValidTestOracle().getTestData().get(oracleCount).length; ++index)
+								{
+									
+									validTestOracle = currentRow.createCell(count);
+									validTestOracle.setCellValue(node.getValidTestOracle().getTestData().get(oracleCount)[index]);
+									++count;
+								}
+							}
+						
+		
+					}
+				}
+				
+				
+				Cell invalidTestOracle;
+				
+				invalidTestOracle = currentRow.createCell(count);
+				//System.out.println(count);
+				invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestTypeData().size());
+				++count;
+				//System.out.println(count);
+
+				for(int oracleCount = 0; oracleCount < node.getInvalidTestOracle().getTestTypeData().size(); ++oracleCount)
+				{
+					for(int i = 0; i < 2; ++i)
+					{
+						if(i == 0)
+							{
+								invalidTestOracle = currentRow.createCell(count);
+								invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestTypeData().get(oracleCount));
+								++count;
+								//System.out.println(count);
+							}
+							else
+							{
+								invalidTestOracle = currentRow.createCell(count);
+								invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestData().get(oracleCount).length);
+								++count;
+								for(int index = 0; index < node.getInvalidTestOracle().getTestData().get(oracleCount).length; ++index)
+								{
+									
+									invalidTestOracle = currentRow.createCell(count);
+									invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestData().get(oracleCount)[index]);
+									++count;
+									//System.out.println(count);
+								}
+							}
+						
+		
+					}
+				}
+				userInputInvalidStart = count;
+			}
+			catch(Exception e){
+			
+			}
+			
+			try{
+				Cell combinationData;
+				int count = userInputInvalidStart;
+				combinationData = currentRow.createCell(count);
+				//System.out.println(count);
+				combinationData.setCellValue(node.getCombinationalInput().getDataInputs().size());
+				++count;
+				for(int combinationCount = 0; combinationCount < node.getCombinationalInput().getDataInputs().size(); ++combinationCount)
+				{
+					combinationData = currentRow.createCell(count);
+					combinationData.setCellValue(node.getCombinationalInput().getDataInputs().get(combinationCount).getSize());
+					++count;
+					for(int combinationInputCount = 0; combinationInputCount < node.getCombinationalInput().getDataInputs().get(combinationCount).getSize(); ++combinationInputCount)
+					{
+						combinationData = currentRow.createCell(count);
+						combinationData.setCellValue(node.getCombinationalInput().getDataInputs().get(combinationCount).getInputName().get(combinationInputCount).toString());
+						++count;
+					}
+				}
+			}
+			catch(Exception e){
+				
+			}
+		}
 		//Marking marking = node.getMarking();
 		//markingCell.setCellValue(marking.toString());
 	}
@@ -278,8 +461,9 @@ public class TestTreeFile {
 	        //throw new IOException(LocaleBundle.bundleString("Incorrect test data format"));	 
 	    }
 		Cell numberOfChildrenCell = rootRow.getCell(3);
-		TestNode root = new TestNode("Root", "Root", "Root");
+		TestNode root = new TestNode(rootRow.getCell(0).toString(), rootRow.getCell(1).toString(), rootRow.getCell(2).toString());
 		root.setNumberrOfSuccessors(getNumberOfChildren(numberOfChildrenCell.toString()));
+		System.out.println("root fired");
 		return root;
 	}
 
@@ -312,8 +496,13 @@ public class TestTreeFile {
         Cell titleCell = rootRow.getCell(1);
         Cell urlCell = rootRow.getCell(2);
 		Cell numberOfChildrenCell = rootRow.getCell(3);
-		Cell negativeCell = rootRow.getCell(4);
-		Cell markingCell = rootRow.getCell(5);
+		Cell isFormCell = rootRow.getCell(4);
+		Cell isStartSessionCell = rootRow.getCell(5);
+		Cell hasTableCell = rootRow.getCell(6);
+		Cell formName = rootRow.getCell(7);
+		Cell numOfValidInputs = rootRow.getCell(8);
+		
+
 		
 		//Transition transition = getTransition(transitionIndexCell.toString(), mid);
 //System.out.println("Transition "+transition);
@@ -325,7 +514,159 @@ public class TestTreeFile {
 		parent.add(newNode);
 		newNode.setParent(parent);
 		newNode.setNumberrOfSuccessors(getNumberOfChildren(numberOfChildrenCell.toString()));
-//System.out.println("read node: "+newNode);	
+		newNode.setIsForm(Boolean.valueOf(isFormCell.toString()));
+		newNode.setIsSessionStart(Boolean.valueOf(isStartSessionCell.toString()));
+		newNode.setTable(Boolean.valueOf(hasTableCell.toString()));
+		newNode.setFormName(formName.getStringCellValue());
+		
+		if(newNode.isForm() && !newNode.hasTable())
+		{
+			//System.out.println("Transition "+idNumberCell.toString());
+			Cell userInputID;
+			Cell userInputType;
+			Cell userInputDataTemp;
+			
+			UserInput temp ;
+			ArrayList<String> userInputData;
+			ArrayList<UserInput> userInputs = new ArrayList<UserInput>();
+			
+			Cell numOfValidInputData;
+			String[] columnNames = new String[(int)Double.parseDouble(numOfValidInputs.toString())+1];
+			columnNames[0] = "#";
+			int count = 9; //Check to make sure this is right
+			for(int i = 0; i < (int)Double.parseDouble(numOfValidInputs.toString()); ++i)
+			{
+				
+				numOfValidInputData = rootRow.getCell(count);
+				++count;
+				userInputID = rootRow.getCell(count);
+				columnNames[i+1] = userInputID.toString();
+				++count;
+				userInputType = rootRow.getCell(count);
+				++count;
+				userInputData = new ArrayList<String>();
+				for(int j = 0; j < (int)Double.parseDouble(numOfValidInputData.toString()); ++j)
+				{
+					
+					userInputDataTemp = rootRow.getCell(count);
+					userInputData.add(userInputDataTemp.toString());
+					++count;
+				}
+				
+				temp = new UserInput(userInputID.toString(), InputDataType.getFormInputType(userInputType.toString()), userInputData);
+			
+				userInputs.add(temp);
+			}
+				newNode.columnNames = columnNames;
+				newNode.setUserInput(userInputs);
+				//System.out.println(newNode.getUserInput().get(0).getUserInputData());
+				userInputs = new ArrayList<UserInput>();
+				++count;
+			for(int i = 0; i < (int)Double.parseDouble(numOfValidInputs.toString()); ++i)
+			{
+				numOfValidInputData = rootRow.getCell(count);
+				++count;
+				userInputID = rootRow.getCell(count);
+				++count;
+				userInputType = rootRow.getCell(count);
+				++count;
+				userInputData = new ArrayList<String>();
+				for(int j = 0; j < (int)Double.parseDouble(numOfValidInputData.toString()); ++j)
+				{
+					
+					userInputDataTemp = rootRow.getCell(count);
+					userInputData.add(userInputDataTemp.toString());
+					++count;
+				}
+				
+				temp = new UserInput(userInputID.toString(), InputDataType.getFormInputType(userInputType.toString()), userInputData);
+			
+				userInputs.add(temp);
+			}
+				newNode.setUserInputInvalid(userInputs);
+				//System.out.println("read node: "+newNode);	
+			TestOracle tempOracle = new TestOracle();
+			String testOracleDataType = "";
+			String[] testOracleData = {"",""};
+			Cell testOracleTemp;
+			Cell numOfValidTestOracleData = rootRow.getCell(count);
+			++count;
+			for(int oracleCount = 0; oracleCount < (int)Double.parseDouble(numOfValidTestOracleData.toString()); ++oracleCount)	
+			{
+				testOracleTemp = rootRow.getCell(count);
+				testOracleDataType = testOracleTemp.toString();
+				++count;
+				++count;
+				testOracleTemp = rootRow.getCell(count);
+				//System.out.println(testOracleTemp.toString());
+				testOracleData[0] = testOracleTemp.toString();
+				//System.out.println(testOracleData[0]);
+				++count;
+				testOracleTemp = rootRow.getCell(count);
+				//System.out.println(testOracleTemp.toString());
+				testOracleData[1] = testOracleTemp.toString();
+				//System.out.println(testOracleData[1]);
+				++count;
+				tempOracle.addTestOracleTypeData(testOracleDataType);
+				tempOracle.addTestOracleData(testOracleData);
+			}
+
+			newNode.setValidTestOracle(tempOracle);
+
+			
+			tempOracle = new TestOracle();
+			testOracleDataType = "";
+			String[] invalidTestOracleData = {"",""};
+			Cell invalidTestOracleTemp;
+			Cell numOfInvalidTestOracleData = rootRow.getCell(count);
+			++count;
+			for(int oracleCount = 0; oracleCount < (int)Double.parseDouble(numOfInvalidTestOracleData.toString()); ++oracleCount)	
+			{
+				invalidTestOracleTemp = rootRow.getCell(count);
+				testOracleDataType = invalidTestOracleTemp.toString();
+				++count;
+				++count;
+				invalidTestOracleTemp = rootRow.getCell(count);
+				invalidTestOracleData[0] = invalidTestOracleTemp.toString();
+				++count;
+				invalidTestOracleTemp = rootRow.getCell(count);
+				invalidTestOracleData[1] = invalidTestOracleTemp.toString();
+				++count;
+				tempOracle.addTestOracleTypeData(testOracleDataType);
+				tempOracle.addTestOracleData(invalidTestOracleData);
+			}
+			newNode.setInvalidTestOracle(tempOracle);
+					
+			ArrayList<String> namesOfInputs = new ArrayList<String>();
+			ComboInput inputName;
+			ArrayList<ComboInput> comboInputs = new ArrayList<ComboInput>();
+			CombinationalInputs tempCombination;
+			String tempName = "";
+			String tempCount = "";
+			Cell combinationalInput;
+			Cell numOfCombinationalInputs = rootRow.getCell(count);
+			++count;
+			for(int combinationalCount = 0; combinationalCount < (int)Double.parseDouble(numOfCombinationalInputs.toString()); ++combinationalCount)	
+			{
+				combinationalInput = rootRow.getCell(count);
+				tempCount = combinationalInput.toString();
+				++count;
+				for(int combinationalInputCount = 0; combinationalInputCount < (int)Double.parseDouble(tempCount); ++combinationalInputCount)
+				{
+					combinationalInput = rootRow.getCell(count);
+					tempName = combinationalInput.toString();
+					++count;
+					namesOfInputs.add(tempName);
+					
+				}
+				inputName = new ComboInput(namesOfInputs);
+				comboInputs.add(inputName);
+
+			}
+			tempCombination = new CombinationalInputs(comboInputs);
+			newNode.setInputCombos(namesOfInputs);
+			newNode.convertInputToVectors(newNode);
+		}
 		
 		return newNode;
 	}

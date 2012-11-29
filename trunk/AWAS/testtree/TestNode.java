@@ -20,7 +20,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	
 	private String url;
 	private String id;	
-	private String formName;
+	private String formName = "";
 	private FormGroup formRecords;
 	private Boolean noTable = true;
 	private Boolean isForm = false;
@@ -124,14 +124,30 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		return isForm;
 	}
 	
+	public void setIsForm(Boolean isForm)
+	{
+		this.isForm = isForm;
+	}
+	
 	public Boolean hasTable()
 	{
 		return noTable;
 	}
 	
+	
 	public void setTable(Boolean tableSet)
 	{
 		noTable = tableSet;
+	}
+	
+	public Boolean isSessionStart()
+	{
+		return isSessionStart;
+	}
+	
+	public void setIsSessionStart(Boolean isSessionStart)
+	{
+		this.isSessionStart = isSessionStart;
 	}
 	
 	public String getFullNodeInfo(){
@@ -181,6 +197,22 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 		  return userInputCombos;
 	  }
 	 
+	  public void setCombinationalInput(ArrayList<ComboInput> comboInputs)
+	  {
+		  this.userInputCombos = new CombinationalInputs(comboInputs);
+	  }
+	  
+	  public ArrayList<String> getInputCombos()
+	  {
+		  return inputCombos;
+	  }
+	 
+	  public void setInputCombos(ArrayList<String> comboInputs)
+	  {
+		  this.inputCombos = comboInputs;
+	  }
+	  
+	  
 	  public ArrayList<UserInput> getUserInput()
 	  {
 		  return userInput;
@@ -208,7 +240,9 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	  
 	  public  void setValidTestOracle(TestOracle validTestOracleData)
 	  {
+		  System.out.println(validTestOracleData.getTestData().get(0)[0]);
 		  this.validTestOracleData = validTestOracleData;
+		  
 	  }
 	  
 	  public TestOracle getInvalidTestOracle()
@@ -228,6 +262,7 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	  
 	  public Vector<Vector<Object>> getValidData()
 	  {
+		  //System.out.println(validData);
 		  return validData;
 	  }
 	  
@@ -256,8 +291,10 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	  }	  
 	 
 	  
-	  public void convertInputToVectors()
+	  public void convertInputToVectors(TestNode node)
 	  {
+		 // System.out.println("convert?");
+		 // System.out.println(userInput.size()+1);
 		  columnNames = new String[userInput.size()+1];
 		  int count = 0;
 	      	for(int i = 0; i < columnNames.length; ++i)
@@ -319,25 +356,31 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      	{
 	      		Vector<Object> temp = new Vector<Object>();
 	      			
-	      		for(int col = 0; col < 3; ++col)
+	      		//for(int col = 0; col < 3; ++col)
 	      		{			
       					try{
-      						validTestOracleData.getTestTypeData().get(col);
-      						if(col == 0)
+      						validTestOracleData.getTestTypeData().get(row);
+      						temp.add(validTestOracleData.getTestTypeData().get(row));
+      						temp.add(validTestOracleData.getTestData().get(row)[0]);
+      						temp.add(validTestOracleData.getTestData().get(row)[1]);
+      						/*if(col == 0)
       						{
-      							temp.add(validTestOracleData.getTestTypeData().get(col));
+      							temp.add(validTestOracleData.getTestTypeData().get(row));
       						}
       						else
       						{
-      							for(int index = 0; index < validTestOracleData.getTestData().get(col).length; ++index)
+      							for(int index = 0; index < 2; ++index)
           						{
-          							temp.add(validTestOracleData.getTestData().get(col)[index]);
+          							temp.add(validTestOracleData.getTestData().get(row)[index]);
+          							//System.out.println(validTestOracleData.getTestData().get(row)[index]);
           						}
-      						}
-      						
+      						}*/
+      						//System.out.println(validTestOracleData.getTestData().get(row)[0]);
       						//System.out.println(userInput.get(col).getUserInputData().get(row));
       					}
       					catch(IndexOutOfBoundsException e){
+      						temp.add("");
+      						temp.add("");
       						temp.add("");
       					}	      						      			
 	      			      				
@@ -353,27 +396,33 @@ public class TestNode extends DefaultMutableTreeNode implements Serializable{
 	      	{
 	      		Vector<Object> temp = new Vector<Object>();
 	      			
-	      		for(int col = 0; col < 3; ++col)
+	      		//for(int col = 0; col < 3; ++col)
 	      		{			
-      					try{
-      						invalidTestOracleData.getTestTypeData().get(col);
-      						if(col == 0)
+	      			try{
+  						invalidTestOracleData.getTestTypeData().get(row);
+  						temp.add(invalidTestOracleData.getTestTypeData().get(row));
+  						temp.add(invalidTestOracleData.getTestData().get(row)[0]);
+  						temp.add(invalidTestOracleData.getTestData().get(row)[1]);
+  						/*if(col == 0)
+  						{
+  							temp.add(validTestOracleData.getTestTypeData().get(row));
+  						}
+  						else
+  						{
+  							for(int index = 0; index < 2; ++index)
       						{
-      							temp.add(invalidTestOracleData.getTestTypeData().get(col));
+      							temp.add(validTestOracleData.getTestData().get(row)[index]);
+      							//System.out.println(validTestOracleData.getTestData().get(row)[index]);
       						}
-      						else
-      						{
-      							for(int index = 0; index < invalidTestOracleData.getTestData().get(col).length; ++index)
-          						{
-          							temp.add(invalidTestOracleData.getTestData().get(col)[index]);
-          						}
-      						}
-      						
-      						//System.out.println(userInput.get(col).getUserInputData().get(row));
-      					}
-      					catch(IndexOutOfBoundsException e){
-      						temp.add("");
-      					}	      						      			
+  						}*/
+  						//System.out.println(validTestOracleData.getTestData().get(row)[0]);
+  						//System.out.println(userInput.get(col).getUserInputData().get(row));
+  					}
+  					catch(IndexOutOfBoundsException e){
+  						temp.add("");
+  						temp.add("");
+  						temp.add("");
+  					}	    						      			
 	      			      				
 	      		}
 	      		temp.insertElementAt(row+1, 0);

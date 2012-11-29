@@ -308,7 +308,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
         currentTreeModel.addTreeModelListener(this);
         JTree currentTestTree = new JTree(currentTreeModel);        
     	testTrees.add(currentTestTree);
-    	System.out.println(rootNode.toString());
+    	//System.out.println(rootNode.toString());
 		tabbedPane.addTab(rootNode.toString(), new JScrollPane(currentTestTree));
 		tabbedPane.setSelectedIndex(testTrees.size()-1);
 		tabbedPane.setTabComponentAt(tabbedPane.getTabCount()-1, new ButtonTabComponent(rootNode.toString(), "tree.png", tabbedPane.getTabCount()>1, this));
@@ -503,18 +503,20 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     	addNodeItem = createPopupMenuItem("Add Node...", TestCommands.ADD_NODE_COMMAND);
     	deleteNodeItem = createPopupMenuItem("Delete Node", TestCommands.DELETE_NODE_COMMAND);
     	popupMenu.addSeparator();
-    	JMenuItem checkBoxMenuItem = new JCheckBoxMenuItem("Mark Start of Session");
+    	final JMenuItem checkBoxMenuItem = new JCheckBoxMenuItem("Mark Start of Session");
     	checkBoxMenuItem.addActionListener(new ActionListener() {
     	      public void actionPerformed(ActionEvent event) {
     	    	  TestNode currentNode = getSelectedTestNode();
     	    	  if(currentNode.isSessionStart == true)
     	    	  {
     	    		  currentNode.isSessionStart = false;
+    	    		  checkBoxMenuItem.setSelected(false);   	    		
     	    		  System.out.println("FALSE");
     	    	  }
     	    	  else
     	    	  {
     	    		  currentNode.isSessionStart = true;
+    	    		  checkBoxMenuItem.setSelected(true);  
     	    		  System.out.println("TRUE");
     	    	  }
     	    	  
@@ -664,7 +666,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     	File inputFile = new File("./savedTree.xls");
     	try {
     		TestNode node = TestTreeFile.loadTestDataFromExcelFile(inputFile);
-    		System.out.println("Outside Load "+node.getTitle()+node.getChildCount());
+    		//System.out.println("Outside Load "+node.getTitle()+node.getChildCount());
     		//Thread.sleep(1000);
     		//presentTestTree(node,false);
 			createTestTree(TestTreeFile.loadTestDataFromExcelFile(inputFile));
@@ -794,16 +796,18 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     		String url = currentNode.getURL();
     		if(currentNode.hasTable())
     		{
-    			System.out.println(currentNode.getTitle());
-	    		String xlsPath = "C:\\Users\\Chuck\\Desktop\\job\\AutoNav\\"+currentNode.getTitle()+".xls";
+    			System.out.println(currentNode.getFormName());
+	    		String xlsPath = "C:\\Users\\Chuck\\Desktop\\work\\AutoNav\\"+currentNode.getFormName()+".xls";
 	    		UserInputReader reader = new UserInputReader(xlsPath, 0, scanDriver);
 	    		reader.readFromExcel(formName, url);
 	    		currentNode.setUserInput(reader.getUserInput());
 	    		currentNode.setUserInputInvalid(reader.getUserInputInvalid());
 	    		currentNode.userInputCombos = reader.getCombinationalInput();
-	    		currentNode.convertInputToVectors();
+	    		currentNode.convertInputToVectors(currentNode);
 	    		currentNode.setTable(false);
     		}
+    		
+    		
     		UserInputGUI showTable = new UserInputGUI(currentNode);
     		showTable.showUserInput();
     	} else if (command == TestCommands.REPLAY_DEPTH_FIRST_COMMAND) { 
@@ -811,6 +815,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
             replayDepthFirst(currentNode);
     	} else if (command == TestCommands.MARK_SESSION_START_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();
+    		
     		
     	} else if (command == TestCommands.NEW_SUBTREE_COMMAND) { 
     		TestNode currentNode = getSelectedTestNode();

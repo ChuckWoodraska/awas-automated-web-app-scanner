@@ -841,7 +841,19 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
         } else { 
     	}
     } 
+    
     // end popup menu
     /////////////////////////////////////////////////////////////	
+    
+    public void signout(WebDriver driver){
+    	String[] signout = {"SIGNOUT", "Sign Out", "Signout", "Log Out", "Logout" , "Sign out"}; 
+    	for(int soindex = 0; soindex < signout.length; soindex++){
+			try {
+				driver.findElement(By.linkText(signout[soindex])).click();
+            } catch (Exception e) {
+            }            
+		}    	
+  	 }
+    	    
 
  }

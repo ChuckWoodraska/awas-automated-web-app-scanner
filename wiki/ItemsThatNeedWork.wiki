@@ -9,6 +9,10 @@ Still working on these things
 
 Icon for links vs forms
 
+Numbering of nodes
+
+Duplicate info in nodes
+
 Page source vs URL (whether to create nodes based on page source and whether this is possible)
 
 File upload fix

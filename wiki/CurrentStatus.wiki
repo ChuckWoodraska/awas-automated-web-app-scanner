@@ -11,11 +11,11 @@ Reminder: This project requires the Java Selenium WebDriver package. See Librari
 
 Last Updates:
 
-- Session Stack to handle sessions
+- Save/Load
 
-Next Updates should include:
+-Next Updates
 
--Finish Save/Load
+-Fix invalid combo generator
 
 -Fix upward chaining of sessions (should only use data inputs in the path and not replay rest of the nodes)
 

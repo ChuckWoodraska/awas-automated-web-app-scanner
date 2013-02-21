@@ -569,6 +569,7 @@ public class AutoFormNavigator  {
 		//System.out.println(formInputNames);
 		for(int[]combination : formInputCombinations)
 		{
+			System.out.println(formInputCombinations.size());
 			for (int index=0; index<combination.length; index++){
 				
 				Object formInputElement = formInputs.get(index);
@@ -608,7 +609,7 @@ public class AutoFormNavigator  {
 							for(int t = 0; t < combination.length; ++t)
 							{
 								tempc[t] = combination[t];
-								//System.out.print(combination[t]+" ");	
+								System.out.print(combination[t]+" ");	
 							}
 							System.out.println("");
 							combination[index] = k;
@@ -678,7 +679,23 @@ public class AutoFormNavigator  {
 					}
 					else if(formInputElement instanceof WebElement)
 					{
-						element = executeDriver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+						element = null;
+						try{
+							element = executeDriver.findElement(By.name(((WebElement) formInputElement).getAttribute(KEYWORD_NAME)));
+						}
+						catch (Exception e) {
+			    			try {
+				    			element = executeDriver.findElement(By.id(((WebElement) formInputElement).getAttribute(KEYWORD_ID)));
+				    		}
+				    		catch (Exception e1) {
+				    			try {
+					    			element = executeDriver.findElement(By.className(((WebElement) formInputElement).getAttribute("class")));
+					    		}
+					    		catch (Exception e2) {
+			
+					    		}
+				    		}
+						}
 						executeFormInput(element, combination[index], executeDriver);
 						
 						InputRecord inputrecord = new InputRecord(InputDataType.getFormInputType(element.getAttribute(KEYWORD_TYPE)),element.getAttribute(KEYWORD_NAME), element.getAttribute(KEYWORD_VALUE));
@@ -1232,7 +1249,7 @@ public class AutoFormNavigator  {
 			}
 		}
     	String URL2 = currentDriver.getCurrentUrl();
-    	//System.out.println(URL2);
+    	System.out.println(URL2);
 //    	Alert alert = currentDriver.switchTo().alert();
 //    	if (alert!=null){
 //    		try {
@@ -1260,7 +1277,7 @@ public class AutoFormNavigator  {
     	TestNode node = new TestNode(formID , URL2, formIndex+"", formGroup.getFormInputs(), false);
     	testNodes.add(node);
     	
-    	System.out.println(currentDriver.getCurrentUrl());
+    	System.out.println("bottom of click" +currentDriver.getCurrentUrl());
     	//signout(currentDriver);
   	 }
     

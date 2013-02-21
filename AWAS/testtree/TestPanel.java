@@ -585,12 +585,17 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     		if(originalNode.isForm())
     		{
     			setupFormNode(originalNode);
+    		
     		}
     		else
     		{
     			navigate(originalNode, originalNode.getURL(), false);
-    		}    		
+    		
+    		}  
+  
     		sessionStack.clear();
+    		//signout(executeDriver);
+    		//signout(scanDriver);
  
     	}
     	else if(currentNode.isSessionStart == true)
@@ -629,13 +634,24 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     			if(childNode.isForm())
         		{
         			setupFormNode(childNode);
+        			
         		}
         		else
         		{
         			
         			navigate(childNode, executeDriver.getCurrentUrl(), false);
+
         		}
+
         		sessionStack.clear();
+
+    		    try {
+    				executeDriver.wait(5000);
+    			} catch (InterruptedException e) {
+    				System.out.println("Error at synchronizing in elementClick");
+    			}
+        		
+        		signout(executeDriver);
     		    		
     	}
     	else if(currentNode.getParent() != null)
@@ -847,6 +863,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     
     public void signout(WebDriver driver){
     	String[] signout = {"SIGNOUT", "Sign Out", "Signout", "Log Out", "Logout" , "Sign out"}; 
+    	
     	for(int soindex = 0; soindex < signout.length; soindex++){
 			try {
 				driver.findElement(By.linkText(signout[soindex])).click();

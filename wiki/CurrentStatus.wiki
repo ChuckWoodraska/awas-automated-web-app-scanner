@@ -15,7 +15,7 @@ Last Updates:
 
 -Placeholder values (?placeholder?)
 
--Next Updates
+Next Updates:
 
 -Fix upward chaining of sessions (should only use data inputs in the path and not replay rest of the nodes)
 

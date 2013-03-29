@@ -569,7 +569,7 @@ public class AutoFormNavigator  {
 		//System.out.println(formInputNames);
 		for(int[]combination : formInputCombinations)
 		{
-			System.out.println(formInputCombinations.size());
+			//System.out.println(formInputCombinations.size());
 			for (int index=0; index<combination.length; index++){
 				
 				Object formInputElement = formInputs.get(index);
@@ -588,36 +588,60 @@ public class AutoFormNavigator  {
 				}
 			}
 		}
-		//System.out.println(formInputIndexes);
+		//System.out.println(formInputIndexes.length);
+		// Number of inputs equals formInputIndexes.length
 		for(int i = 0; i < formInputIndexes.length; ++i)
 		{
+			// Number of data items for the selected input equals invalidcount
 			int invalidcount = invalidInput.get(i).getUserInputData().size();
 			//System.out.println(invalidcount);
+			//System.out.println(formInputCombinations);
+			
+			//System.out.print(" old list ");	
 			for(int[]combination : formInputCombinations)
 			{
-
-				int index = formInputIndexes[i];
-				if(combination[index]==0)
+				
+				//for(int t = 0; t < combination.length; ++t)
+				//{
+				//	System.out.print(combination[t]+" ");	
+				//}
+				//System.out.println("");
+				//int index = formInputIndexes[i];
+				if(combination[i]==0)
 				{
 					
 						for(int k = 0; k < invalidcount; ++k)
 						{
 							int tempc[] = new int[combination.length];
-							//System.out.println(combination[index]);
-							combination[index] = k * (-1) - 1;
-							//System.out.println(combination[index]);
+							//System.out.println(combination[i]);
+							combination[i] = k * (-1) - 1;
+							//System.out.println(combination[i]);
+							//System.out.print(" new list ");
 							for(int t = 0; t < combination.length; ++t)
 							{
 								tempc[t] = combination[t];
-								System.out.print(combination[t]+" ");	
+								//System.out.print(tempc[t]+" ");	
 							}
-							System.out.println("");
-							combination[index] = k;
+							//System.out.println("");
+							combination[i] = 0;
 							formInvalidInputCombinations.add(tempc);
 						}
 				}
 			}
 			
+		}
+		for(int[]combination : formInputCombinations)
+		{
+			//formInvalidInputCombinations.add(combination);
+		}
+		System.out.println(" new new list ");	
+		for(int t = 0; t < formInvalidInputCombinations.size(); ++t)
+		{
+			for(int s = 0; s < formInvalidInputCombinations.get(t).length; ++s)
+			{
+				System.out.print(formInvalidInputCombinations.get(t)[s]+" ");	
+			}
+			System.out.println("");
 		}
 		
 		return formInvalidInputCombinations;
@@ -1291,7 +1315,66 @@ public class AutoFormNavigator  {
     	{
         	while(index < validTestOracle.getTestTypeData().size())
         	{
-        		result = webDriverCommandProcessor.doCommand(validTestOracle.getTestTypeData().get(index), validTestOracle.getTestData().get(index));
+        		String[] testDataString = validTestOracle.getTestData().get(index);
+        		String[] getTestDataString = testDataString;
+        		
+        		if(testDataString[0].contains("."))
+        		{
+        			String[] newTestDataStringTarget = testDataString[0].split("\\.");
+        			System.out.println(newTestDataStringTarget[0]);
+        			System.out.println(newTestDataStringTarget[1]);
+        			
+        			newTestDataStringTarget[0] = newTestDataStringTarget[0].replace("?", "");
+        			newTestDataStringTarget[1] = newTestDataStringTarget[1].replace("?", "");
+        			System.out.println(newTestDataStringTarget[0]);
+        			System.out.println(newTestDataStringTarget[1]);
+        			
+        			getTestDataString[0] = userInput.get(Integer.parseInt(newTestDataStringTarget[0])).getUserInputString(Integer.parseInt(newTestDataStringTarget[1]));
+        		}
+        		else
+        		{
+        			String newTestDataStringTarget = testDataString[0].replace("?", "");
+        			if(testDataString[0].contains("[a-zA-Z]+"))
+        			{
+        				System.out.println(newTestDataStringTarget);
+        			}
+        			else
+        			{
+        				System.out.println(newTestDataStringTarget);
+        				getTestDataString[0] = userInput.get(Integer.parseInt(newTestDataStringTarget)).getUserInputString(formrecord.getDataCombos().get(Integer.parseInt(newTestDataStringTarget)));
+        			}
+        		}
+
+        		if(testDataString[1].contains("."))
+        		{
+        			String[] newTestDataStringValue = testDataString[1].split("\\.");
+        			System.out.println(newTestDataStringValue[0]);
+        			System.out.println(newTestDataStringValue[1]);
+        			
+        			newTestDataStringValue[0] = newTestDataStringValue[0].replace("?", "");
+        			newTestDataStringValue[1] = newTestDataStringValue[1].replace("?", "");
+        			System.out.println(newTestDataStringValue[0]);
+        			System.out.println(newTestDataStringValue[1]);
+        			
+        			getTestDataString[1] = userInput.get(Integer.parseInt(newTestDataStringValue[0])).getUserInputString(Integer.parseInt(newTestDataStringValue[1]));
+        		}
+        		else
+        		{
+        			String newTestDataStringValue = testDataString[1].replace("?", "");
+        			if(testDataString[1].contains("[a-zA-Z]+"))
+        			{
+        				System.out.println(newTestDataStringValue);
+        			}
+        			else
+        			{
+        				System.out.println(newTestDataStringValue);
+        				getTestDataString[1] = userInput.get(Integer.parseInt(newTestDataStringValue)).getUserInputString(formrecord.getDataCombos().get(Integer.parseInt(newTestDataStringValue)));
+        			}
+        		}
+        		
+        		
+        		
+        		result = webDriverCommandProcessor.doCommand(validTestOracle.getTestTypeData().get(index), getTestDataString);
         		System.out.println(result);
         		++index;
         	}
@@ -1300,6 +1383,25 @@ public class AutoFormNavigator  {
     	{
         	while(index < invalidTestOracle.getTestTypeData().size())
         	{
+        		String[] testDataString = invalidTestOracle.getTestData().get(index);
+        		
+        		String[] newTestDataStringTarget = testDataString[0].split("\\.");
+        		System.out.println(newTestDataStringTarget[0]);
+        		System.out.println(newTestDataStringTarget[1]);
+        		
+        		String[] newTestDataStringValue = testDataString[1].split("\\.");
+        		System.out.println(newTestDataStringValue[0]);
+        		System.out.println(newTestDataStringValue[1]);
+        		
+        		newTestDataStringTarget[0] = newTestDataStringTarget[0].replace("?", "");
+        		newTestDataStringTarget[1] = newTestDataStringTarget[1].replace("?", "");
+        		System.out.println(newTestDataStringTarget[0]);
+        		System.out.println(newTestDataStringTarget[1]);
+        		
+        		newTestDataStringValue[0] = newTestDataStringValue[0].replace("?", "");
+        		newTestDataStringValue[1] = newTestDataStringValue[1].replace("?", "");
+        		System.out.println(newTestDataStringValue[0]);
+        		System.out.println(newTestDataStringValue[1]);
         		result = webDriverCommandProcessor.doCommand(invalidTestOracle.getTestTypeData().get(index), invalidTestOracle.getTestData().get(index));
         		System.out.println(result);
         		++index;

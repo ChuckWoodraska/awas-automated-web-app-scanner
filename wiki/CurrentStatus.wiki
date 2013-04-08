@@ -17,6 +17,10 @@ Last Updates:
 
 Next Updates:
 
+-Add Ning's Preference, Save, and Open programs
+
+-Fix no new added nodes on navigate error
+
 -Fix upward chaining of sessions (should only use data inputs in the path and not replay rest of the nodes)
 
 -Fix replay to work with sessions

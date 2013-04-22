@@ -17,7 +17,7 @@ Last Updates:
 
 Next Updates:
 
--Add Ning's Preference, Save, and Open programs
+-Preference used
 
 -Fix test oracle in element click
 

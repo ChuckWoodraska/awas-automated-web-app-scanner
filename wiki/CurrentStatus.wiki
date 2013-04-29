@@ -11,13 +11,9 @@ Reminder: This project requires the Java Selenium WebDriver package. See Librari
 
 Last Updates:
 
--Fix invalid combo generator
-
 -Placeholder values (?placeholder?)
 
 Next Updates:
-
--Preference used
 
 -Fix test oracle in element click
 

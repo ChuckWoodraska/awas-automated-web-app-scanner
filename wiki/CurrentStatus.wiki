@@ -15,7 +15,7 @@ Last Updates:
 
 Next Updates:
 
--Fix test oracle in element click
+-Fix test oracle in element click (WebDriverCommandProccessor)
 
 -Fix upward chaining of sessions (should only use data inputs in the path and not replay rest of the nodes)
 

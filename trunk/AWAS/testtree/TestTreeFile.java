@@ -204,123 +204,123 @@ public class TestTreeFile {
 		}
 		catch(Exception e){
 		}
-		if(userInputInvalidStart != 0)
-		{
-			try{
-				Cell validTestOracle;
-				
-				int count = userInputInvalidStart;
-				System.out.println(count);
-				validTestOracle = currentRow.createCell(count);
-				validTestOracle.setCellValue(node.getValidTestOracle().getTestTypeData().size());
-				++count;
-				
-				
-				//System.out.println(node.getValidTestOracle().getTestData().get());
-				
-				
-				for(int oracleCount = 0; oracleCount < node.getValidTestOracle().getTestTypeData().size(); ++oracleCount)
-				{
-					for(int i = 0; i < 2; ++i)
-					{
-						if(i == 0)
-							{
-								validTestOracle = currentRow.createCell(count);
-								validTestOracle.setCellValue(node.getValidTestOracle().getTestTypeData().get(oracleCount));
-								++count;
-								//System.out.println(count);
-							}
-							else
-							{
-								validTestOracle = currentRow.createCell(count);
-								validTestOracle.setCellValue(node.getValidTestOracle().getTestData().get(oracleCount).length);
-								//System.out.println(node.getValidTestOracle().getTestData().get(i));
-								++count;
-								for(int index = 0; index < node.getValidTestOracle().getTestData().get(oracleCount).length; ++index)
-								{
-									
-									validTestOracle = currentRow.createCell(count);
-									validTestOracle.setCellValue(node.getValidTestOracle().getTestData().get(oracleCount)[index]);
-									++count;
-								}
-							}
-						
-		
-					}
-				}
-				
-				
-				Cell invalidTestOracle;
-				
-				invalidTestOracle = currentRow.createCell(count);
-				//System.out.println(count);
-				invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestTypeData().size());
-				++count;
-				//System.out.println(count);
-
-				for(int oracleCount = 0; oracleCount < node.getInvalidTestOracle().getTestTypeData().size(); ++oracleCount)
-				{
-					for(int i = 0; i < 2; ++i)
-					{
-						if(i == 0)
-							{
-								invalidTestOracle = currentRow.createCell(count);
-								invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestTypeData().get(oracleCount));
-								++count;
-								//System.out.println(count);
-							}
-							else
-							{
-								invalidTestOracle = currentRow.createCell(count);
-								invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestData().get(oracleCount).length);
-								++count;
-								for(int index = 0; index < node.getInvalidTestOracle().getTestData().get(oracleCount).length; ++index)
-								{
-									
-									invalidTestOracle = currentRow.createCell(count);
-									invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestData().get(oracleCount)[index]);
-									++count;
-									//System.out.println(count);
-								}
-							}
-						
-		
-					}
-				}
-				userInputInvalidStart = count;
-			}
-			catch(Exception e){
-			
-			}
-			
-			try{
-				Cell combinationData;
-				int count = userInputInvalidStart;
-				combinationData = currentRow.createCell(count);
-				//System.out.println(count);
-				combinationData.setCellValue(node.getCombinationalInput().getDataInputs().size());
-				++count;
-				for(int combinationCount = 0; combinationCount < node.getCombinationalInput().getDataInputs().size(); ++combinationCount)
-				{
-					combinationData = currentRow.createCell(count);
-					combinationData.setCellValue(node.getCombinationalInput().getDataInputs().get(combinationCount).getSize());
-					++count;
-					for(int combinationInputCount = 0; combinationInputCount < node.getCombinationalInput().getDataInputs().get(combinationCount).getSize(); ++combinationInputCount)
-					{
-						combinationData = currentRow.createCell(count);
-						combinationData.setCellValue(node.getCombinationalInput().getDataInputs().get(combinationCount).getInputName().get(combinationInputCount).toString());
-						++count;
-					}
-				}
-			}
-			catch(Exception e){
-				
-			}
+//		if(userInputInvalidStart != 0)
+//		{
+//			try{
+//				Cell validTestOracle;
+//				
+//				int count = userInputInvalidStart;
+//				System.out.println(count);
+//				validTestOracle = currentRow.createCell(count);
+//				validTestOracle.setCellValue(node.getValidTestOracle().getTestTypeData().size());
+//				++count;
+//				
+//				
+//				//System.out.println(node.getValidTestOracle().getTestData().get());
+//				
+//				
+//				for(int oracleCount = 0; oracleCount < node.getValidTestOracle().getTestTypeData().size(); ++oracleCount)
+//				{
+//					for(int i = 0; i < 2; ++i)
+//					{
+//						if(i == 0)
+//							{
+//								validTestOracle = currentRow.createCell(count);
+//								validTestOracle.setCellValue(node.getValidTestOracle().getTestTypeData().get(oracleCount));
+//								++count;
+//								//System.out.println(count);
+//							}
+//							else
+//							{
+//								validTestOracle = currentRow.createCell(count);
+//								validTestOracle.setCellValue(node.getValidTestOracle().getTestData().get(oracleCount).length);
+//								//System.out.println(node.getValidTestOracle().getTestData().get(i));
+//								++count;
+//								for(int index = 0; index < node.getValidTestOracle().getTestData().get(oracleCount).length; ++index)
+//								{
+//									
+//									validTestOracle = currentRow.createCell(count);
+//									validTestOracle.setCellValue(node.getValidTestOracle().getTestData().get(oracleCount)[index]);
+//									++count;
+//								}
+//							}
+//						
+//		
+//					}
+//				}
+//				
+//				
+//				Cell invalidTestOracle;
+//				
+//				invalidTestOracle = currentRow.createCell(count);
+//				//System.out.println(count);
+//				invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestTypeData().size());
+//				++count;
+//				//System.out.println(count);
+//
+//				for(int oracleCount = 0; oracleCount < node.getInvalidTestOracle().getTestTypeData().size(); ++oracleCount)
+//				{
+//					for(int i = 0; i < 2; ++i)
+//					{
+//						if(i == 0)
+//							{
+//								invalidTestOracle = currentRow.createCell(count);
+//								invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestTypeData().get(oracleCount));
+//								++count;
+//								//System.out.println(count);
+//							}
+//							else
+//							{
+//								invalidTestOracle = currentRow.createCell(count);
+//								invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestData().get(oracleCount).length);
+//								++count;
+//								for(int index = 0; index < node.getInvalidTestOracle().getTestData().get(oracleCount).length; ++index)
+//								{
+//									
+//									invalidTestOracle = currentRow.createCell(count);
+//									invalidTestOracle.setCellValue(node.getInvalidTestOracle().getTestData().get(oracleCount)[index]);
+//									++count;
+//									//System.out.println(count);
+//								}
+//							}
+//						
+//		
+//					}
+//				}
+//				userInputInvalidStart = count;
+//			}
+//			catch(Exception e){
+//			
+//			}
+//			
+//			try{
+//				Cell combinationData;
+//				int count = userInputInvalidStart;
+//				combinationData = currentRow.createCell(count);
+//				//System.out.println(count);
+//				combinationData.setCellValue(node.getCombinationalInput().getDataInputs().size());
+//				++count;
+//				for(int combinationCount = 0; combinationCount < node.getCombinationalInput().getDataInputs().size(); ++combinationCount)
+//				{
+//					combinationData = currentRow.createCell(count);
+//					combinationData.setCellValue(node.getCombinationalInput().getDataInputs().get(combinationCount).getSize());
+//					++count;
+//					for(int combinationInputCount = 0; combinationInputCount < node.getCombinationalInput().getDataInputs().get(combinationCount).getSize(); ++combinationInputCount)
+//					{
+//						combinationData = currentRow.createCell(count);
+//						combinationData.setCellValue(node.getCombinationalInput().getDataInputs().get(combinationCount).getInputName().get(combinationInputCount).toString());
+//						++count;
+//					}
+//				}
+//			}
+//			catch(Exception e){
+//				
+//			}
 		}
 		//Marking marking = node.getMarking();
 		//markingCell.setCellValue(marking.toString());
-	}
 	
+
 	static private void writeUserInput(TestNode node, Sheet sheet){
 //		ParaTableModel paraTable = node.getParaTable();
 //		if (paraTable!=null) {
@@ -585,86 +585,86 @@ public class TestTreeFile {
 			}
 				newNode.setUserInputInvalid(userInputs);
 				//System.out.println("read node: "+newNode);	
-			TestOracle tempOracle = new TestOracle();
-			String testOracleDataType = "";
-			String[] testOracleData = {"",""};
-			Cell testOracleTemp;
-			Cell numOfValidTestOracleData = rootRow.getCell(count);
-			++count;
-			for(int oracleCount = 0; oracleCount < (int)Double.parseDouble(numOfValidTestOracleData.toString()); ++oracleCount)	
-			{
-				testOracleTemp = rootRow.getCell(count);
-				testOracleDataType = testOracleTemp.toString();
-				++count;
-				++count;
-				testOracleTemp = rootRow.getCell(count);
-				//System.out.println(testOracleTemp.toString());
-				testOracleData[0] = testOracleTemp.toString();
-				//System.out.println(testOracleData[0]);
-				++count;
-				testOracleTemp = rootRow.getCell(count);
-				//System.out.println(testOracleTemp.toString());
-				testOracleData[1] = testOracleTemp.toString();
-				//System.out.println(testOracleData[1]);
-				++count;
-				tempOracle.addTestOracleTypeData(testOracleDataType);
-				tempOracle.addTestOracleData(testOracleData);
-			}
-
-			newNode.setValidTestOracle(tempOracle);
-
-			
-			tempOracle = new TestOracle();
-			testOracleDataType = "";
-			String[] invalidTestOracleData = {"",""};
-			Cell invalidTestOracleTemp;
-			Cell numOfInvalidTestOracleData = rootRow.getCell(count);
-			++count;
-			for(int oracleCount = 0; oracleCount < (int)Double.parseDouble(numOfInvalidTestOracleData.toString()); ++oracleCount)	
-			{
-				invalidTestOracleTemp = rootRow.getCell(count);
-				testOracleDataType = invalidTestOracleTemp.toString();
-				++count;
-				++count;
-				invalidTestOracleTemp = rootRow.getCell(count);
-				invalidTestOracleData[0] = invalidTestOracleTemp.toString();
-				++count;
-				invalidTestOracleTemp = rootRow.getCell(count);
-				invalidTestOracleData[1] = invalidTestOracleTemp.toString();
-				++count;
-				tempOracle.addTestOracleTypeData(testOracleDataType);
-				tempOracle.addTestOracleData(invalidTestOracleData);
-			}
-			newNode.setInvalidTestOracle(tempOracle);
-					
-			ArrayList<String> namesOfInputs = new ArrayList<String>();
-			ComboInput inputName;
-			ArrayList<ComboInput> comboInputs = new ArrayList<ComboInput>();
-			CombinationalInputs tempCombination;
-			String tempName = "";
-			String tempCount = "";
-			Cell combinationalInput;
-			Cell numOfCombinationalInputs = rootRow.getCell(count);
-			++count;
-			for(int combinationalCount = 0; combinationalCount < (int)Double.parseDouble(numOfCombinationalInputs.toString()); ++combinationalCount)	
-			{
-				combinationalInput = rootRow.getCell(count);
-				tempCount = combinationalInput.toString();
-				++count;
-				for(int combinationalInputCount = 0; combinationalInputCount < (int)Double.parseDouble(tempCount); ++combinationalInputCount)
-				{
-					combinationalInput = rootRow.getCell(count);
-					tempName = combinationalInput.toString();
-					++count;
-					namesOfInputs.add(tempName);
-					
-				}
-				inputName = new ComboInput(namesOfInputs);
-				comboInputs.add(inputName);
-
-			}
-			tempCombination = new CombinationalInputs(comboInputs);
-			newNode.setInputCombos(namesOfInputs);
+//			TestOracle tempOracle = new TestOracle();
+//			String testOracleDataType = "";
+//			String[] testOracleData = {"",""};
+//			Cell testOracleTemp;
+//			Cell numOfValidTestOracleData = rootRow.getCell(count);
+//			++count;
+//			for(int oracleCount = 0; oracleCount < (int)Double.parseDouble(numOfValidTestOracleData.toString()); ++oracleCount)	
+//			{
+//				testOracleTemp = rootRow.getCell(count);
+//				testOracleDataType = testOracleTemp.toString();
+//				++count;
+//				++count;
+//				testOracleTemp = rootRow.getCell(count);
+//				//System.out.println(testOracleTemp.toString());
+//				testOracleData[0] = testOracleTemp.toString();
+//				//System.out.println(testOracleData[0]);
+//				++count;
+//				testOracleTemp = rootRow.getCell(count);
+//				//System.out.println(testOracleTemp.toString());
+//				testOracleData[1] = testOracleTemp.toString();
+//				//System.out.println(testOracleData[1]);
+//				++count;
+//				tempOracle.addTestOracleTypeData(testOracleDataType);
+//				tempOracle.addTestOracleData(testOracleData);
+//			}
+//
+//			newNode.setValidTestOracle(tempOracle);
+//
+//			
+//			tempOracle = new TestOracle();
+//			testOracleDataType = "";
+//			String[] invalidTestOracleData = {"",""};
+//			Cell invalidTestOracleTemp;
+//			Cell numOfInvalidTestOracleData = rootRow.getCell(count);
+//			++count;
+//			for(int oracleCount = 0; oracleCount < (int)Double.parseDouble(numOfInvalidTestOracleData.toString()); ++oracleCount)	
+//			{
+//				invalidTestOracleTemp = rootRow.getCell(count);
+//				testOracleDataType = invalidTestOracleTemp.toString();
+//				++count;
+//				++count;
+//				invalidTestOracleTemp = rootRow.getCell(count);
+//				invalidTestOracleData[0] = invalidTestOracleTemp.toString();
+//				++count;
+//				invalidTestOracleTemp = rootRow.getCell(count);
+//				invalidTestOracleData[1] = invalidTestOracleTemp.toString();
+//				++count;
+//				tempOracle.addTestOracleTypeData(testOracleDataType);
+//				tempOracle.addTestOracleData(invalidTestOracleData);
+//			}
+//			newNode.setInvalidTestOracle(tempOracle);
+//					
+//			ArrayList<String> namesOfInputs = new ArrayList<String>();
+//			ComboInput inputName;
+//			ArrayList<ComboInput> comboInputs = new ArrayList<ComboInput>();
+//			CombinationalInputs tempCombination;
+//			String tempName = "";
+//			String tempCount = "";
+//			Cell combinationalInput;
+//			Cell numOfCombinationalInputs = rootRow.getCell(count);
+//			++count;
+//			for(int combinationalCount = 0; combinationalCount < (int)Double.parseDouble(numOfCombinationalInputs.toString()); ++combinationalCount)	
+//			{
+//				combinationalInput = rootRow.getCell(count);
+//				tempCount = combinationalInput.toString();
+//				++count;
+//				for(int combinationalInputCount = 0; combinationalInputCount < (int)Double.parseDouble(tempCount); ++combinationalInputCount)
+//				{
+//					combinationalInput = rootRow.getCell(count);
+//					tempName = combinationalInput.toString();
+//					++count;
+//					namesOfInputs.add(tempName);
+//					
+//				}
+//				inputName = new ComboInput(namesOfInputs);
+//				comboInputs.add(inputName);
+//
+//			}
+//			tempCombination = new CombinationalInputs(comboInputs);
+//			newNode.setInputCombos(namesOfInputs);
 			newNode.convertInputToVectors(newNode);
 		}
 		

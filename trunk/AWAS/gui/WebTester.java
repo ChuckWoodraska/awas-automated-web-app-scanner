@@ -33,7 +33,7 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
 
 	private JToolBar toolBar;
     private TestPanel testPanel;
-    
+    private static JFrame jf;
     private ArrayList<String> recentProjects;
     
     public WebTester(String title) {
@@ -205,13 +205,8 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
         } 
         else if (MenuCommands.NEW_COMMAND.equals(cmd)) { 
         	testPanel.removeAllTestTrees();        	        
-        	//testPanel.navigate(null, "http://www.google.com/", false);
-        	//testPanel.navigate(null, "http://localhost:61730/AWASSandbox/Default.aspx", false);
-        	testPanel.navigate(null, "http://demo.magentocommerce.com/", false);
-        	//testPanel.navigate(null, "http://24.111.169.202", false);
-        	//testPanel.navigate(null, "http://www.amazon.com", false);
-        	//testPanel.navigate(null, "http://localhost:8080", false);
-        
+        	// ENTER URL HERE
+        	testPanel.navigate(null, "http://demo.magentocommerce.com/", false);        
          
 //        testPanel.createSampleTree();
 
@@ -221,6 +216,8 @@ public class WebTester extends JFrame implements Serializable, TestPanelInterfac
 
 
         }
+       
+        
         else {
         	try {
         		int projectIndex = Integer.parseInt(cmd);

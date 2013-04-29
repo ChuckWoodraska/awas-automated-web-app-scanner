@@ -595,34 +595,23 @@ public class AutoFormNavigator  {
 			// Number of data items for the selected input equals invalidcount
 			int invalidcount = invalidInput.get(i).getUserInputData().size();
 			//System.out.println(invalidcount);
-			//System.out.println(formInputCombinations);
-			
-			//System.out.print(" old list ");	
+	
 			for(int[]combination : formInputCombinations)
 			{
 				
-				//for(int t = 0; t < combination.length; ++t)
-				//{
-				//	System.out.print(combination[t]+" ");	
-				//}
-				//System.out.println("");
-				//int index = formInputIndexes[i];
 				if(combination[i]==0)
 				{
 					
 						for(int k = 0; k < invalidcount; ++k)
 						{
 							int tempc[] = new int[combination.length];
-							//System.out.println(combination[i]);
 							combination[i] = k * (-1) - 1;
-							//System.out.println(combination[i]);
-							//System.out.print(" new list ");
+
 							for(int t = 0; t < combination.length; ++t)
 							{
 								tempc[t] = combination[t];
-								//System.out.print(tempc[t]+" ");	
+	
 							}
-							//System.out.println("");
 							combination[i] = 0;
 							formInvalidInputCombinations.add(tempc);
 						}
@@ -634,7 +623,6 @@ public class AutoFormNavigator  {
 		{
 			//formInvalidInputCombinations.add(combination);
 		}
-		System.out.println(" new new list ");	
 		for(int t = 0; t < formInvalidInputCombinations.size(); ++t)
 		{
 			for(int s = 0; s < formInvalidInputCombinations.get(t).length; ++s)
@@ -1264,14 +1252,14 @@ public class AutoFormNavigator  {
     		System.out.println("Error at Submit in elementClick");
     	}
     	// WAIT
-		synchronized (currentDriver)
-		{
-		    try {
-				currentDriver.wait(1000);
-			} catch (InterruptedException e) {
-				System.out.println("Error at synchronizing in elementClick");
-			}
-		}
+//		synchronized (currentDriver)
+//		{
+//		    try {
+//				currentDriver.wait(1000);
+//			} catch (InterruptedException e) {
+//				System.out.println("Error at synchronizing in elementClick");
+//			}
+//		}
     	String URL2 = currentDriver.getCurrentUrl();
     	System.out.println(URL2);
 //    	Alert alert = currentDriver.switchTo().alert();
@@ -1285,11 +1273,11 @@ public class AutoFormNavigator  {
 //    		}
 //    	}
 
-    	currentDriver = testOracle(currentDriver);
-    	testOracleValid = true;
-    	//System.out.println("Below testOracle");
+    	
     	formGroup = new FormGroup(formIndex, formID, new ArrayList<FormRecord>());
     	formGroup.addFormInput(formrecord);
+    	TestNode node = new TestNode(formID , URL2, formIndex+"", formGroup.getFormInputs(), false);
+    	testNodes.add(node);
 		synchronized (currentDriver)
 		{
 		    try {
@@ -1298,14 +1286,14 @@ public class AutoFormNavigator  {
 				System.out.println("Error at synchronizing in elementClick");
 			}
 		}
-    	TestNode node = new TestNode(formID , URL2, formIndex+"", formGroup.getFormInputs(), false);
-    	testNodes.add(node);
+		testOracleValid = true;
+		testOracle(currentDriver);
     	
     	System.out.println("bottom of click" +currentDriver.getCurrentUrl());
     	//signout(currentDriver);
   	 }
     
-    private WebDriver testOracle(WebDriver currentDriver)
+    private void testOracle(WebDriver currentDriver)
     {
     	String result = "";
     	WebDriverCommandProcessor webDriverCommandProcessor = new WebDriverCommandProcessor("", currentDriver);
@@ -1334,9 +1322,16 @@ public class AutoFormNavigator  {
         		else
         		{
         			String newTestDataStringTarget = testDataString[0].replace("?", "");
-        			if(testDataString[0].contains("[a-zA-Z]+"))
+        			if(testDataString[0].matches("[a-zA-Z]+"))
         			{
         				System.out.println(newTestDataStringTarget);
+        				int tempIndex = 0;
+        				for(int i = 0; i < userInput.size(); i++)
+        				{
+        					if(userInput.get(i).getInputID() == newTestDataStringTarget)
+        						tempIndex = i;
+        				}
+        				System.out.println(tempIndex);
         			}
         			else
         			{
@@ -1408,7 +1403,6 @@ public class AutoFormNavigator  {
         	}
     	}
 
-    	return currentDriver;
     }
 
     

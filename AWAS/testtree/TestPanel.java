@@ -3,6 +3,8 @@ package testtree;
 import input.AutoFormNavigator;
 import input.MyFirefoxDriver;
 import input.MyHashTable;
+import input.PreferenceInterface;
+import input.PreferenceOptions;
 import input.UserInputGUI;
 import input.UserInputReader;
 
@@ -59,10 +61,15 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     private WebDriver driver = new MyFirefoxDriver();
     private WebDriver scanDriver = new MyFirefoxDriver();       
     private WebDriver executeDriver = new MyFirefoxDriver(); 
+    private PreferenceOptions po = new PreferenceOptions();
     
     private boolean sessionDriver = false;
 
-// 	private static int MAX_LINKS_PER_PAGE = 20;
+    private int maxLinks = 1000;
+    private int maxNodes = 1000;
+    private String savePath = "";
+    private int waitTime = 1000;
+    private boolean pairwiseTesting = true;
 
  	protected TestPanelInterface testPanelInterface;
  	
@@ -75,6 +82,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     public TestPanel(TestPanelInterface testPanelInterface) {
         super(new GridLayout(1,0));
         this.testPanelInterface = testPanelInterface;
+        po.readPreferenceOptionsFromFile();
         initializeWebPageArea();
         initializeTraceArea();
         initializeTestTrees();
@@ -122,13 +130,7 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	    	else{
 			    	try {
 				        driver.get(urlString);
-		/*		        for (WebElement element:       driver.findElements(By.tagName("a"))){
-				        	System.out.println("text: "+element.getText());
-				        	System.out.println("id: "+element.getAttribute("id"));
-				        	System.out.println("class: "+element.getAttribute("class"));
-				        	System.out.println("href: "+element.getAttribute("href"));
-				        }	       
-		*/		         
+ 
 			    	    TestNode currentRootNode = testNode==null? new TestNode(driver.getTitle()): testNode;
 			    	    String parentID = testNode==null? "": testNode.getID()+".";
 			    	    
@@ -146,7 +148,6 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 
 	private void navigateHyperLinks(TestNode currentRootNode, String parentID){
 	    int index = currentRootNode.getChildCount()+1;
-	    int count = 0;
 	    System.out.println("Number of anchors: "+driver.findElements(By.tagName("a")).size());
 	    for (WebElement element: driver.findElements(By.tagName("a"))){
 	     	String hrefAttributeString = element.getAttribute("href");
@@ -160,7 +161,6 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 
 	    	    }
 	    	}	
-	    	count++;
 	    }
 
 	}
@@ -177,7 +177,6 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 	
 	private void navigateSessionHyperLinks(TestNode currentRootNode, String parentID){
 	    int index = currentRootNode.getChildCount()+1;
-	    int count = 0;
 	    System.out.println("Number of anchors: "+executeDriver.findElements(By.tagName("a")).size());
 	    for (WebElement element: executeDriver.findElements(By.tagName("a"))){
 	     	String hrefAttributeString = element.getAttribute("href");
@@ -191,7 +190,6 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 
 	    	    }
 	    	}	
-	    	count++;
 	    }
 
 	}
@@ -510,13 +508,13 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
     	    	  if(currentNode.isSessionStart == true)
     	    	  {
     	    		  currentNode.isSessionStart = false;
-    	    		  checkBoxMenuItem.setSelected(false);   	    		
+    	    		  //checkBoxMenuItem.setSelected(false);   	    		
     	    		  System.out.println("FALSE");
     	    	  }
     	    	  else
     	    	  {
     	    		  currentNode.isSessionStart = true;
-    	    		  checkBoxMenuItem.setSelected(true);  
+    	    		 // checkBoxMenuItem.setSelected(true);  
     	    		  System.out.println("TRUE");
     	    	  }
     	    	  
@@ -645,13 +643,6 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
 
         		sessionStack.clear();
 
-    		    try {
-    				executeDriver.wait(5000);
-    			} catch (InterruptedException e) {
-    				System.out.println("Error at synchronizing in elementClick");
-    			}
-        		
-        		signout(executeDriver);
     		    		
     	}
     	else if(currentNode.getParent() != null)
@@ -854,7 +845,16 @@ public class TestPanel extends JPanel implements Serializable, TreeSelectionList
                 traceArea.append("To add a node.");
         } else if (command == TestCommands.DELETE_NODE_COMMAND) { 
                 removeSelectedNode(getCurrentTestTree());
-        } else { 
+        }  else if (command == TestCommands.PREFERENCES_COMMAND){
+        	PreferenceInterface pi = new PreferenceInterface(po);
+        	pi.showGUI();
+        	maxLinks = po.getMaxLinks();
+        	maxNodes = po.getMaxNode();
+        	waitTime = po.getWaitTime();
+        	savePath = po.getSaveFilePath();
+        	pairwiseTesting = po.getPairWise();
+        }
+        else { 
     	}
     } 
     

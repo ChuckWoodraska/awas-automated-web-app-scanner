@@ -2,11 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SELENIUM"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/POI"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Selenium"/>
-	<classpathentry kind="lib" path="C:/Users/Chuck/workspace/WebTester0.1/Libraries/selenium-java-2.32.0"/>
-	<classpathentry kind="lib" path="C:/Users/Chuck/workspace/WebTester0.1/Libraries/selenium-java-2.32.0-srcs"/>
-	<classpathentry kind="lib" path="C:/Users/Chuck/workspace/WebTester0.1/Libraries/guava-14.0"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

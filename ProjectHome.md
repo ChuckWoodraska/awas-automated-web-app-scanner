@@ -1,0 +1,9 @@
+Create a better web app scanner.
+
+The goal of the project is to create a web application scanner that can be used for both functionality and security testing. Through this project I hope to develop a web app scanner that is more automated, user friendly, and have a better security tester that reports only real security problems and not the false positives like other scanners.
+
+·         Being able to automate most of the steps involved with web app scanning will save time for the user allowing more time to be spent on focused security testing that is complex. This will hopefully reduce the overall number of vulnerabilities and lead to more secure web applications.
+·         AWAS allows user to watch the interaction that takes place between it and the web application. Through the use of a browser that is opened AWAS interacts with the web app and the user is able to see the scanner work.
+·         The idea for creating the better security tester is to create an inference engine that uses a knowledge base of security vulnerabilities to give its recommendation of whether it’s a real security problem or not. This will allow both professionals who are computer security experts and professionals with limited computer security knowledge to run this tool with expected results. No need for security knowledge will help more people use this tool, which will benefit the user of AWAS and users of the tested web application with a more secure web app.
+
+As mentioned, the final version of AWAS will be able to do both functional and security testing of web applications while focusing on the three points of automation, user friendliness, and a more accurate security vulnerability scanner. This should help fix the problems seen in most web application scanners today where they are too complex for people with little computer security knowledge.
